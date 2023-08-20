@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
+import SignupComponent from '@/auth/SignupComponent';
 
 function signup() {
 	const styles = {
@@ -47,66 +48,7 @@ function signup() {
 					<Box className="text-sm ">OR</Box>
 					<Box className="border-b-2 border-black w-4/12 text-lightGray"></Box>
 				</Box>
-				<Box className={styles.inputContainer}>
-					<input
-						type="tel"
-						className={styles.input}
-						placeholder="Mobile Number"
-					/>
-					<input type="email" className={styles.input} placeholder="Email" />
-					<input type="text" className={styles.input} placeholder="Full Name" />
-					<input type="text" className={styles.input} placeholder="Username" />
-					<input
-						type="password"
-						className={styles.input}
-						placeholder="Password"
-					/>
-				</Box>
-				<Box className={styles.termTxtBox}>
-					<p className={styles.termsTxt}>
-						People who use our service may have uploaded your contact
-						information to Instagram.
-						<a
-							href="https://www.facebook.com/help/instagram/261704639352628"
-							target="_blank"
-							className={styles.link}
-						>
-							{` Learn More`}
-						</a>
-					</p>
-				</Box>
-				<Box className={styles.termTxtBox}>
-					<p className={styles.termsTxt}>
-						By signing up, you agree to our{' '}
-						<a
-							href="https://help.instagram.com/581066165581870/?locale=en_US"
-							target="_blank"
-							className={styles.link}
-						>
-							Terms
-						</a>
-						,{' '}
-						<a
-							href="https://www.facebook.com/privacy/policy"
-							target="_blank"
-							className={styles.link}
-						>
-							Privacy Policy
-						</a>{' '}
-						and{' '}
-						<a
-							href="https://help.instagram.com/1896641480634370/"
-							target="_blank"
-							className={styles.link}
-						>
-							Cookies Policy
-						</a>
-						.
-					</p>
-				</Box>
-				<Box className={styles.lightBlueBtnBox}>
-					<p className="text-white font-semibold">Sign up</p>
-				</Box>
+				<SignupComponent />
 			</Box>
 			<Box className={styles.lowerContainer}>
 				<p className={styles.smallText}>Meta</p>

@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorControllers');
@@ -14,6 +15,13 @@ const storyRouter = require('./routes/storyRoutes');
 const reelRouter = require('./routes/reelRoutes');
 
 const app = express();
+
+app.use(
+	cors({
+		origin: 'http://localhost:3000',
+		credentials: true,
+	})
+);
 
 app.set('view engine', 'ejs');
 
@@ -34,7 +42,7 @@ app.use('/api/v1/story', storyRouter);
 app.use('/api/v1/reel', reelRouter);
 
 app.all('*', (req, res, next) => {
-	next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+	next(new AppError(`Can't find ${req.originalUrl} on this server!!`, 404));
 });
 
 app.use(globalErrorHandler);
