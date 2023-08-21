@@ -14,6 +14,8 @@ const {
 	getAllpostAndReels,
 } = require('../controllers/postControllers');
 
+const { uploadImage } = require('../controllers/uploadControllers');
+
 const { protect } = require('../controllers/authControllers');
 
 const router = express.Router();
@@ -24,7 +26,10 @@ router.route('/postAndReels').get(getAllpostAndReels);
 router.route('/myposts').get(getAllMyPosts);
 router.route('/postByUser/:userId').get(getPostsByUsers);
 
-router.route('/').get(getAllPost).post(setUser, cleanCacheUser, createPost);
+router
+	.route('/')
+	.get(getAllPost)
+	.post(setUser, cleanCacheUser, uploadImage, createPost);
 
 router
 	.route('/:id')

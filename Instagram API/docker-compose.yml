@@ -1,6 +1,6 @@
 version: '3'
 services:
-  web:
+  api:
     build:
       context: .
       dockerfile: Dockerfile.dev
