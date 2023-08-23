@@ -1,4 +1,4 @@
-const Like = require('../models/likesModel');
+const PostLike = require('../models/postLikeModel');
 const factory = require('./handleFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -16,12 +16,10 @@ exports.setUser = catchAsync(async (req, res, next) => {
 });
 
 exports.check = catchAsync(async (req, res, next) => {
-	const existingLike = await Like.findOne({
+	const existingLike = await PostLike.findOne({
 		user: req.user.id,
 		post: req.body.post,
 	});
-	console.log(req.body);
-	console.log(req.body.post);
 	console.log(existingLike);
 	if (existingLike) {
 		return next(new AppError('You already liked this post', 404));
@@ -30,7 +28,7 @@ exports.check = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteLike = catchAsync(async (req, res, next) => {
-	const like = await Like.findById(req.params.id);
+	const like = await PostLike.findById(req.params.id);
 	if (!like) {
 		return next(new AppError('No document found with that Id', 404));
 	}
@@ -39,11 +37,11 @@ exports.deleteLike = catchAsync(async (req, res, next) => {
 		await client.HDEL(allPostKey(), postKey(like.post));
 	}
 
-	const doc = await Like.findByIdAndDelete(req.params.id);
+	const doc = await PostLike.findByIdAndDelete(req.params.id);
 	res.status(204).json({
 		status: 'success',
 		data: null,
 	});
 });
 
-exports.createLikes = factory.createOne(Like);
+exports.createLikes = factory.createOne(PostLike);

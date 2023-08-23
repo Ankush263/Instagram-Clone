@@ -14,11 +14,18 @@ function SignupComponent() {
 		username: '',
 		password: '',
 	});
+	const expireTime = process.env.NEXT_PUBLIC_TOKEN_EXPIRE_TIME || 0;
 
 	const handleClick = async () => {
 		setOpen(true);
 		try {
-			await signup(signupDetails);
+			const res = await signup(signupDetails);
+			const token = res.data.token;
+			const expire = new Date().getTime() + Number(expireTime);
+			localStorage.setItem(
+				'Token',
+				JSON.stringify({ value: `${token}`, expires: expire })
+			);
 			window.location.replace('/');
 		} catch (error) {
 			setOpen(false);

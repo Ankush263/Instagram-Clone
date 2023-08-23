@@ -11,6 +11,7 @@ const followRouter = require('./routes/followRoutes');
 const postTagRouter = require('./routes/postTagRoutes');
 const commentRouter = require('./routes/commentRoutes');
 const likesRouter = require('./routes/likeRoutes');
+const postLikesRouter = require('./routes/postLikeRoutes');
 const storyRouter = require('./routes/storyRoutes');
 const reelRouter = require('./routes/reelRoutes');
 
@@ -38,6 +39,7 @@ app.use('/api/v1/follow', followRouter);
 app.use('/api/v1/postTag', postTagRouter);
 app.use('/api/v1/comment', commentRouter);
 app.use('/api/v1/likes', likesRouter);
+app.use('/api/v1/postLikes', postLikesRouter);
 app.use('/api/v1/story', storyRouter);
 app.use('/api/v1/reel', reelRouter);
 

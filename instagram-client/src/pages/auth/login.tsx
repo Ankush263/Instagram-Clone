@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import 'animate.css';
 import Link from 'next/link';
+import LoginComponent from '@/auth/LoginComponent';
 
 function login() {
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -68,7 +69,7 @@ function login() {
 							/>
 						</Box>
 
-						<Box className={styles.inputContainer}>
+						{/* <Box className={styles.inputContainer}>
 							<input
 								type="email"
 								className={styles.input}
@@ -83,7 +84,8 @@ function login() {
 
 						<Box className={styles.darkBlueBtnBox}>
 							<p className="text-white font-semibold">Log in</p>
-						</Box>
+						</Box> */}
+						<LoginComponent />
 						<Box className="w-9/12 mt-5 flex justify-between items-center">
 							<Box className="border-b-2 border-black w-4/12 text-lightGray"></Box>
 							<Box className="text-sm ">OR</Box>

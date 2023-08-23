@@ -14,6 +14,8 @@ const s3 = new AWS.S3({
 exports.uploadImage = catchAsync(async (req, res, next) => {
 	const key = `${req.user.id}/${uuid()}.jpeg`;
 
+	console.log(req.body);
+
 	s3.getSignedUrl(
 		'putObject',
 		{
@@ -22,8 +24,8 @@ exports.uploadImage = catchAsync(async (req, res, next) => {
 			Key: key,
 		},
 		(err, url) => {
-			res.send({ key, url });
-			console.log(url);
+			// res.send({ key, url });
+			console.log({ key, url });
 		}
 	);
 	next();

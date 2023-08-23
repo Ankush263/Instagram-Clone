@@ -9,11 +9,13 @@ function CreatePostPopup() {
 	const [clicked, setClicked] = useState(false);
 	const handleClick = () => {
 		setClicked((prev) => !prev);
+		console.log(window.location.toString() === 'http://localhost:3000/');
 	};
 	const styles = {
 		container: `w-full h-full flex justify-start items-center`,
 		iconBox: `w-full h-full flex justify-start items-center`,
 		popupBox: `w-[495px] h-[537.6px] absolute right-[530px] rounded-xl bottom-[80px] bg-gray cursor-default drop-shadow-2xl`,
+		popupBox2: `w-[495px] h-[537.6px] fixed rounded-xl ml-[500px] top-12 bg-gray cursor-default drop-shadow-2xl`,
 		popupBoxTop: `h-12 w-full flex justify-center items-center border-b-2 border-grayshBlack`,
 		inputFileBtn: `w-40 p-0.5 h-8 rounded-lg cursor-pointer flex justify-center items-center text-sm font-semibold bg-skyBlue hover:bg-deepBlue`,
 		popupBoxMain: `w-full h-[490px] flex flex-col justify-center items-center`,
@@ -22,7 +24,13 @@ function CreatePostPopup() {
 	const openPopup = () => {
 		if (clicked) {
 			return (
-				<Box className={styles.popupBox}>
+				<Box
+					className={
+						window.location.toString() === 'http://localhost:3000/'
+							? styles.popupBox2
+							: styles.popupBox
+					}
+				>
 					<Box className={styles.popupBoxTop}>
 						<span className="font-semibold">Create new post</span>
 					</Box>

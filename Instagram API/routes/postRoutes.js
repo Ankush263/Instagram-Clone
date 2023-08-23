@@ -7,14 +7,13 @@ const {
 	getOnePost,
 	updatePost,
 	deletePost,
-	setUser,
 	checkOwner,
 	getAllMyPosts,
 	getPostsByUsers,
 	getAllpostAndReels,
+	uploadImg,
+	deletePhoto,
 } = require('../controllers/postControllers');
-
-const { uploadImage } = require('../controllers/uploadControllers');
 
 const { protect } = require('../controllers/authControllers');
 
@@ -26,15 +25,12 @@ router.route('/postAndReels').get(getAllpostAndReels);
 router.route('/myposts').get(getAllMyPosts);
 router.route('/postByUser/:userId').get(getPostsByUsers);
 
-router
-	.route('/')
-	.get(getAllPost)
-	.post(setUser, cleanCacheUser, uploadImage, createPost);
+router.route('/').get(getAllPost).post(cleanCacheUser, uploadImg, createPost);
 
 router
 	.route('/:id')
 	.get(getOnePost)
 	.patch(checkOwner, cleanCacheUser, cleanCachePost, updatePost)
-	.delete(checkOwner, cleanCacheUser, cleanCachePost, deletePost);
+	.delete(checkOwner, cleanCacheUser, cleanCachePost, deletePhoto, deletePost);
 
 module.exports = router;
