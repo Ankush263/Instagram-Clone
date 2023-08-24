@@ -68,7 +68,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllUser = factory.getAll(User);
-// exports.getOneUser = factory.getOne(User, 'user', { path: 'posts' });
 exports.getOneUser = factory.getOne(User, {
-	path: 'posts followers followings tagged',
+	path: 'posts followers followings tagged likedPosts',
 });

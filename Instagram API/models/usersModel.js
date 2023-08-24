@@ -149,6 +149,12 @@ userSchema.virtual('tagged', {
 	justOne: false,
 });
 
+userSchema.virtual('likedPosts', {
+	ref: 'PostLike',
+	foreignField: 'user',
+	localField: '_id',
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

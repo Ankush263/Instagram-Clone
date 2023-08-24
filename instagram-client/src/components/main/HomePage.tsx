@@ -3,37 +3,32 @@ import React, { useState, useEffect } from 'react';
 import Story from '@/components/Stories/Story';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import RightSideComponent from '@/components/SideComponents/RightSideComponent';
-import { getAllPosts, createLikeInPost } from '@/api';
+import { getAllPosts, getMe } from '@/api';
 import { fetchToken } from '../token';
 import CommentOutline from '../icons/CommentOutline';
-import NotificationOutline from '../icons/NotificationOutline';
-import LikedIcon from '../icons/LikedIcon';
+import LikeComponent from './LikeComponent';
 
 function HomePage() {
 	const [posts, setPosts] = useState([]);
-	const [liked, setLiked] = useState(false);
+	const [reloadComponent, setReloadComponent] = useState(false);
+	const [user, setUser] = useState<any>({});
 
-	const fetchPosts = async () => {
+	const fetch = async () => {
 		try {
 			const token = fetchToken();
 			const post = await getAllPosts(token);
+			const fetchUser = await getMe(token);
+			setUser(fetchUser.data.data.data);
 			setPosts(post.data.data.data);
 			console.log('post: ', post.data.data.data);
+			console.log('user: ', fetchUser.data.data.data);
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	const handleLike = async (postId: any) => {
-		// setLiked((prev) => !prev);
-		try {
-			const token = fetchToken();
-			console.log(postId);
-			const res = await createLikeInPost(postId as string, token);
-			console.log('res: ', res);
-		} catch (error) {
-			console.log(error);
-		}
+	const handleReload = () => {
+		setReloadComponent((prevState) => !prevState);
 	};
 
 	const timeAgo = (timestamp: string): string => {
@@ -58,8 +53,10 @@ function HomePage() {
 	};
 
 	useEffect(() => {
-		fetchPosts();
-	}, []);
+		setTimeout(() => {
+			fetch();
+		}, 1000);
+	}, [reloadComponent]);
 
 	const styles = {
 		page: `flex justify-center items-center`,
@@ -98,12 +95,8 @@ function HomePage() {
 									<img src={post.url} alt="#" />
 								</Box>
 								<Box className="w-full h-[40px] flex justify-start items-start mt-3">
-									<Box
-										className="cursor-pointer"
-										onClick={() => handleLike(post._id)}
-									>
-										{/* {liked ? <LikedIcon /> : <NotificationOutline />} */}
-										<NotificationOutline />
+									<Box className="cursor-pointer">
+										<LikeComponent _id={post._id} reload={handleReload} />
 									</Box>
 									<Box className="ml-3">
 										<CommentOutline />
@@ -114,6 +107,25 @@ function HomePage() {
 										{post.likesNum}
 										{` likes`}
 									</span>
+								</Box>
+								<Box className="w-full">
+									<span className="font-semibold text-sm">
+										{user.username}
+										{'    '}
+									</span>
+									<span className="text-sm text-left">{post.caption}</span>
+								</Box>
+								<Box className="w-full cursor-pointer">
+									<span className="text-sm text-darkGray">
+										View all comments...
+									</span>
+								</Box>
+								<Box className="w-full cursor-pointer">
+									<span className="font-semibold text-sm">
+										{user.username}
+										{'    '}
+									</span>
+									<span className="text-sm text-left">{post.caption}</span>
 								</Box>
 								<Box className="w-11/12 border-b-2 mt-8 border-gray"></Box>
 							</Box>

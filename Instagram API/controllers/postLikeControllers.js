@@ -4,7 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const User = require('../models/usersModel');
 const client = require('../redis/client');
-const { postKey, allPostKey } = require('../redis/utils/keys');
+const { postKey, allPostKey, postLikesKey } = require('../redis/utils/keys');
 
 exports.setUser = catchAsync(async (req, res, next) => {
 	const userProfile = await User.findById(req.user.id);
@@ -20,7 +20,6 @@ exports.check = catchAsync(async (req, res, next) => {
 		user: req.user.id,
 		post: req.body.post,
 	});
-	console.log(existingLike);
 	if (existingLike) {
 		return next(new AppError('You already liked this post', 404));
 	}
@@ -45,3 +44,39 @@ exports.deleteLike = catchAsync(async (req, res, next) => {
 });
 
 exports.createLikes = factory.createOne(PostLike);
+
+// exports.createLikes = catchAsync(async (req, res, next) => {
+// 	const userId = req.user.id;
+// 	const postId = req.body.post;
+// 	const insertLike = await client.PFADD(postLikesKey(postId), userId);
+
+// 	if (!insertLike) {
+// 		await client.DEL(postLikesKey(postId));
+// 		return res.status(201).json({
+// 			status: 'success',
+// 			data: {
+// 				data: 'deleted',
+// 			},
+// 		});
+// 	}
+
+// 	res.status(201).json({
+// 		status: 'success',
+// 		data: {
+// 			data: 'created',
+// 		},
+// 	});
+// });
+
+// exports.showNumberOfLikes = catchAsync(async (req, res, next) => {
+// 	const postId = req.params.id;
+// 	const key = postLikesKey(postId);
+// 	const likeNumber = await client.PFCOUNT(key);
+
+// 	res.status(201).json({
+// 		status: 'success',
+// 		data: {
+// 			data: likeNumber,
+// 		},
+// 	});
+// });

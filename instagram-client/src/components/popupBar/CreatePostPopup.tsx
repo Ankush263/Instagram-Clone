@@ -4,35 +4,49 @@ import CreateOutline from '../icons/CreateOutline';
 import { RxCross1 } from 'react-icons/rx';
 import { Box } from '@mui/material';
 import PhotoAndVideoIcon from '../icons/PhotoAndVideoIcon';
+import Backdrop from '@mui/material/Backdrop';
 
 function CreatePostPopup() {
 	const [clicked, setClicked] = useState(false);
+	const [open, setOpen] = useState(false);
+
+	const handleClose = () => {
+		setOpen(false);
+		setClicked(false);
+	};
+
 	const handleClick = () => {
 		setClicked((prev) => !prev);
+		setOpen((prev) => !prev);
 		console.log(window.location.toString() === 'http://localhost:3000/');
 	};
 	const styles = {
 		container: `w-full h-full flex justify-start items-center`,
 		iconBox: `w-full h-full flex justify-start items-center`,
 		popupBox: `w-[495px] h-[537.6px] absolute right-[530px] rounded-xl bottom-[80px] bg-gray cursor-default drop-shadow-2xl`,
-		popupBox2: `w-[495px] h-[537.6px] fixed rounded-xl ml-[500px] top-12 bg-gray cursor-default drop-shadow-2xl`,
 		popupBoxTop: `h-12 w-full flex justify-center items-center border-b-2 border-grayshBlack`,
 		inputFileBtn: `w-40 p-0.5 h-8 rounded-lg cursor-pointer flex justify-center items-center text-sm font-semibold bg-skyBlue hover:bg-deepBlue`,
 		popupBoxMain: `w-full h-[490px] flex flex-col justify-center items-center`,
 	};
 
-	const openPopup = () => {
-		if (clicked) {
-			return (
-				<Box
-					className={
-						window.location.toString() === 'http://localhost:3000/'
-							? styles.popupBox2
-							: styles.popupBox
-					}
-				>
+	return (
+		<Box className={styles.container}>
+			<Backdrop
+				sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+				open={open}
+			>
+				<Box className={styles.popupBox}>
 					<Box className={styles.popupBoxTop}>
-						<span className="font-semibold">Create new post</span>
+						<Box className="w-7/12 h-full flex justify-end items-center">
+							<span className="font-semibold">Create new post</span>
+						</Box>
+						<Box className="w-4/12 h-full flex justify-end items-center">
+							<RxCross1
+								size={20}
+								onClick={handleClose}
+								className="cursor-pointer"
+							/>
+						</Box>
 					</Box>
 					<Box className={styles.popupBoxMain}>
 						<PhotoAndVideoIcon />
@@ -45,22 +59,7 @@ function CreatePostPopup() {
 						</label>
 					</Box>
 				</Box>
-			);
-		}
-	};
-
-	const closePopup = () => {
-		if (clicked) {
-			return (
-				<Box className="absolute right-3 top-3">
-					<RxCross1 size={28} onClick={handleClick} />
-				</Box>
-			);
-		}
-	};
-
-	return (
-		<Box className={styles.container}>
+			</Backdrop>
 			{clicked ? (
 				<Box className={styles.iconBox} onClick={handleClick}>
 					<CreateFilled />
@@ -72,8 +71,6 @@ function CreatePostPopup() {
 					<p className="ml-3">Create</p>
 				</Box>
 			)}
-			{openPopup()}
-			{closePopup()}
 		</Box>
 	);
 }
