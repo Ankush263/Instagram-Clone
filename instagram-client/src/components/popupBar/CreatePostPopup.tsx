@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
 import CreateFilled from '../icons/CreateFilled';
 import CreateOutline from '../icons/CreateOutline';
-import { RxCross1 } from 'react-icons/rx';
 import { Box } from '@mui/material';
-import PhotoAndVideoIcon from '../icons/PhotoAndVideoIcon';
 import Backdrop from '@mui/material/Backdrop';
+import ImageBox from '../createPostBox/ImageBox';
+import ImageBoxWithDetails from '../createPostBox/ImageBoxWithDetails';
 
 function CreatePostPopup() {
 	const [clicked, setClicked] = useState(false);
 	const [open, setOpen] = useState(false);
-
-	const handleClose = () => {
-		setOpen(false);
-		setClicked(false);
-	};
+	const [startWritingCaption, setStartWritingCaption] = useState(false);
+	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [imgFile, setImgFile] = useState(null);
 
 	const handleClick = () => {
 		setClicked((prev) => !prev);
 		setOpen((prev) => !prev);
-		console.log(window.location.toString() === 'http://localhost:3000/');
 	};
+
 	const styles = {
 		container: `w-full h-full flex justify-start items-center`,
 		iconBox: `w-full h-full flex justify-start items-center`,
@@ -35,30 +33,31 @@ function CreatePostPopup() {
 				sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 				open={open}
 			>
-				<Box className={styles.popupBox}>
-					<Box className={styles.popupBoxTop}>
-						<Box className="w-7/12 h-full flex justify-end items-center">
-							<span className="font-semibold">Create new post</span>
-						</Box>
-						<Box className="w-4/12 h-full flex justify-end items-center">
-							<RxCross1
-								size={20}
-								onClick={handleClose}
-								className="cursor-pointer"
-							/>
-						</Box>
-					</Box>
-					<Box className={styles.popupBoxMain}>
-						<PhotoAndVideoIcon />
-						<span className="text-xl mt-3 mb-4">
-							Drag photos and videos here
-						</span>
-						<input type="file" id="actual-btn" hidden />
-						<label htmlFor="actual-btn" className={styles.inputFileBtn}>
-							Select from computer
-						</label>
-					</Box>
-				</Box>
+				{!startWritingCaption ? (
+					<ImageBox
+						open={open}
+						setOpen={setOpen}
+						startWritingCaption={startWritingCaption}
+						setStartWritingCaption={setStartWritingCaption}
+						clicked={clicked}
+						setClicked={setClicked}
+						selectedImage={selectedImage}
+						setSelectedImage={setSelectedImage}
+						setImgFile={setImgFile}
+					/>
+				) : (
+					<ImageBoxWithDetails
+						open={open}
+						setOpen={setOpen}
+						startWritingCaption={startWritingCaption}
+						setStartWritingCaption={setStartWritingCaption}
+						clicked={clicked}
+						setClicked={setClicked}
+						selectedImage={selectedImage}
+						setSelectedImage={setSelectedImage}
+						imgFile={imgFile}
+					/>
+				)}
 			</Backdrop>
 			{clicked ? (
 				<Box className={styles.iconBox} onClick={handleClick}>

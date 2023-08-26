@@ -26,17 +26,7 @@ const postSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
-		location: [
-			{
-				type: {
-					type: String,
-					default: 'Point',
-					enum: ['Point'],
-				},
-				coordinates: [Number],
-				description: String,
-			},
-		],
+		location: String,
 	},
 	{
 		toJSON: { virtuals: true },

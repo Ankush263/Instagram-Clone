@@ -19,6 +19,11 @@ export const login = (loginDetails: any) =>
 export const getMe = (_token: string) =>
 	USER_API.get(`/me`, { headers: { Authorization: `Bearer ${_token}` } });
 
+export const createPost = (_token: string, _formData: FormData) =>
+	POST_API.post(`/`, _formData, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
 export const getAllPosts = (_token: string) =>
 	POST_API.get(`/`, { headers: { Authorization: `Bearer ${_token}` } });
 
