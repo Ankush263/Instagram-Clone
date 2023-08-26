@@ -5,10 +5,12 @@ const URL = `http://localhost:5000`;
 const USER_URL = `${URL}/api/v1/user`;
 const POST_URL = `${URL}/api/v1/post`;
 const POST_LIKE_URL = `${URL}/api/v1/postLikes`;
+const POST_TAG_URL = `${URL}/api/v1/postTag`;
 
 const USER_API = axios.create({ baseURL: USER_URL });
 const POST_API = axios.create({ baseURL: POST_URL });
 const POST_LIKE_API = axios.create({ baseURL: POST_LIKE_URL });
+const POST_TAG_API = axios.create({ baseURL: POST_TAG_URL });
 
 export const signup = (signupDetails: any) =>
 	USER_API.post(`/signup`, signupDetails);
@@ -21,6 +23,14 @@ export const getMe = (_token: string) =>
 
 export const createPost = (_token: string, _formData: FormData) =>
 	POST_API.post(`/`, _formData, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
+export const createPostTag = (
+	_token: string,
+	_details: { post: string; username: string; x: number; y: number }
+) =>
+	POST_TAG_API.post(`/username`, _details, {
 		headers: { Authorization: `Bearer ${_token}` },
 	});
 

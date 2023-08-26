@@ -8,6 +8,7 @@ const {
 	checkOwner,
 	checkPost,
 	getAllPostTagByPost,
+	createPostTagByUsername,
 } = require('../controllers/postTagControllers');
 
 const { protect } = require('../controllers/authControllers');
@@ -18,6 +19,10 @@ const router = express.Router();
 router.use(protect);
 
 router.route('/tagsByPost/:postId').get(getAllPostTagByPost);
+
+router
+	.route(`/username`)
+	.post(setUser, checkPost, cleanCachePost, createPostTagByUsername);
 
 router
 	.route('/')

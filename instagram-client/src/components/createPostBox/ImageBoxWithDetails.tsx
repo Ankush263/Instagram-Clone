@@ -4,10 +4,12 @@ import { RxCross1 } from 'react-icons/rx';
 import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
 import { GetStaticProps } from 'next';
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined';
-import { createPost } from '@/api';
+import { createPost, createPostTag } from '@/api';
 import { fetchToken } from '../token';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import ClearSharpIcon from '@mui/icons-material/ClearSharp';
+import Chip from '@mui/material/Chip';
 
 export const getStaticProps: GetStaticProps = async (context) => {
 	return {
@@ -31,7 +33,9 @@ function ImageBoxWithDetails(props: any) {
 	});
 	const [open, setOpen] = useState(false);
 	const [tagNum, setTagNum] = useState<any>([]);
+	const [tag, setTag] = useState<any>([]);
 	const [createTag, setCreateTag] = useState<boolean>(true);
+	const [username, setUsername] = useState('');
 
 	const handleClosed = () => {
 		setOpen(false);
@@ -42,7 +46,23 @@ function ImageBoxWithDetails(props: any) {
 		try {
 			const x = event.clientX;
 			const y = event.clientY;
-			setTagNum([...tagNum, { x, y }]);
+			setTagNum([...tagNum, { username, x, y }]);
+			setTag([...tag, { username, x, y }]);
+
+			setUsername('');
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const handleAdd = () => {
+		try {
+			const updatedTagNum = [...tagNum];
+			updatedTagNum[tagNum.length - 1].username = username;
+			setTagNum(updatedTagNum);
+
+			setUsername('');
+			setTag([]);
 		} catch (error) {
 			console.log(error);
 		}
@@ -56,7 +76,14 @@ function ImageBoxWithDetails(props: any) {
 			formData.append('url', postDetails.url);
 			formData.append('location', postDetails.location);
 			formData.append('caption', postDetails.caption);
-			await createPost(token, formData);
+			const post = await createPost(token, formData);
+			const postId = post.data.data.data._id;
+
+			const apiRequest = tagNum.map((tag: any) => {
+				return createPostTag(token, { ...tag, post: postId });
+			});
+			const responses = await Promise.all(apiRequest);
+
 			window.location.replace(`/`);
 			handleClosed();
 		} catch (error) {
@@ -65,32 +92,60 @@ function ImageBoxWithDetails(props: any) {
 		}
 	};
 
+	const handleRemoveTag = (username: string, x: number, y: number) => {
+		try {
+			console.log('remove: ', username, x, y);
+			const deleteObj = { username, x, y };
+			setTagNum(
+				tagNum.filter(
+					(obj: any) =>
+						obj.username !== deleteObj.username ||
+						obj.x !== deleteObj.x ||
+						obj.y !== deleteObj.y
+				)
+			);
+			setTag([]);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	const tagBox = () => {
 		return (
-			<Box
-				className="w-56 h-9 rounded-md bg-black absolute flex justify-center items-center"
-				sx={{ left: `130px`, top: `80px` }}
-			>
+			<Box className={styles.tagBox} sx={{ left: `130px`, top: `80px` }}>
 				<span className="text-sm font-semibold">click photo to tag people</span>
 			</Box>
 		);
 	};
 
-	const inputTag = (x: number, y: number) => {
+	const inputTag = (name: string, x: number, y: number) => {
 		return (
 			<Box
-				className="w-56 h-9 rounded-md bg-black absolute flex justify-center items-center"
+				className={styles.inputTag}
 				sx={{
-					left: `${x < 351 ? x - 47 : 340}px`,
-					top: `${y < 590 ? y - 89 : 490}px`,
+					left: `${x - 390}px`,
+					top: `${y - 93}px`,
 				}}
-				onClick={() => console.log(x, y)}
 			>
 				<input
 					type="text"
 					className="w-11/12 h-full bg-black outline-none"
 					placeholder="people..."
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
 				/>
+
+				{username.length > 0 ? (
+					<button className={styles.smallBtn} onClick={handleAdd}>
+						Add
+					</button>
+				) : (
+					<ClearSharpIcon
+						fontSize="small"
+						className="cursor-pointer"
+						onClick={() => handleRemoveTag(name, x, y)}
+					/>
+				)}
 			</Box>
 		);
 	};
@@ -117,6 +172,9 @@ function ImageBoxWithDetails(props: any) {
 		popupBoxMain: `w-full h-[490px] flex justify-center items-center`,
 		boxLeft: `w-7/12 h-full flex justify-center items-center`,
 		boxRight: `w-5/12 h-full flex flex-col justify-start items-center`,
+		smallBtn: `w-12 h-5 text-xs bg-deepBlue flex justify-center items-center rounded-md`,
+		tagBox: `w-56 h-9 rounded-md bg-black absolute flex justify-center items-center`,
+		inputTag: `w-[150px] h-9 p-2 rounded-md bg-black absolute flex justify-center items-center`,
 	};
 	return (
 		<Box className={styles.popupBox}>
@@ -166,8 +224,8 @@ function ImageBoxWithDetails(props: any) {
 					/>
 					{createTag && tagBox()}
 					{!createTag &&
-						tagNum.map((i: any) => {
-							return inputTag(i.x, i.y);
+						tag.map((i: any) => {
+							return inputTag(i.name, i.x, i.y);
 						})}
 				</Box>
 				<Box className={styles.boxRight}>
@@ -198,6 +256,20 @@ function ImageBoxWithDetails(props: any) {
 							}
 						/>
 						<FmdGoodOutlinedIcon fontSize="small" />
+					</Box>
+
+					<Box className="w-full">
+						{tagNum.map((i: any) => {
+							return (
+								<Chip
+									label={`${i.username}`}
+									variant="outlined"
+									className="text-white"
+									onDelete={() => handleRemoveTag(i.username, i.x, i.y)}
+									onClick={() => console.log(tagNum)}
+								/>
+							);
+						})}
 					</Box>
 				</Box>
 			</Box>

@@ -66,5 +66,21 @@ exports.deletePostTag = catchAsync(async (req, res, next) => {
 	});
 });
 
+exports.createPostTagByUsername = catchAsync(async (req, res, next) => {
+	const username = req.body.username;
+	const user = await User.findOne({ username });
+	if (!user) {
+		return next(new AppError(`User with this username does not exists`, 404));
+	}
+	const doc = await PostTag.create({ ...req.body, taggedPerson: user._id });
+
+	res.status(200).json({
+		status: 'success',
+		data: {
+			data: doc,
+		},
+	});
+});
+
 exports.createPostTag = factory.createOne(PostTag);
 exports.getAllPostTag = factory.getAll(PostTag);
