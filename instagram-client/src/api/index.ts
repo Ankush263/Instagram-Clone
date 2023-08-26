@@ -37,6 +37,11 @@ export const createPostTag = (
 export const getAllPosts = (_token: string) =>
 	POST_API.get(`/`, { headers: { Authorization: `Bearer ${_token}` } });
 
+export const getIdAndPhotoOfPosts = (_token: string) =>
+	POST_API.get(`/?fields=url,-user`, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
 export const createLikeInPost = (postId: string, _token: string) =>
 	POST_LIKE_API.post(
 		`/`,
