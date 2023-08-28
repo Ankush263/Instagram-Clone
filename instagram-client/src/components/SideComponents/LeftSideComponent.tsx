@@ -74,7 +74,7 @@ function LeftSideComponent() {
 					)}
 				</Box>
 
-				<Box className={styles.sideBox}>
+				{/* <Box className={styles.sideBox}>
 					{url === '/main/ReelsPage' ? (
 						<Box className={styles.iconBox}>
 							<VideoFilled />
@@ -88,7 +88,7 @@ function LeftSideComponent() {
 							</Box>
 						</Link>
 					)}
-				</Box>
+				</Box> */}
 
 				<Box className={styles.sideBox}>
 					<Box className={styles.iconBox}>

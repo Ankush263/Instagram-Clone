@@ -6,11 +6,13 @@ const USER_URL = `${URL}/api/v1/user`;
 const POST_URL = `${URL}/api/v1/post`;
 const POST_LIKE_URL = `${URL}/api/v1/postLikes`;
 const POST_TAG_URL = `${URL}/api/v1/postTag`;
+const COMMENT_URL = `${URL}/api/v1/comment`;
 
 const USER_API = axios.create({ baseURL: USER_URL });
 const POST_API = axios.create({ baseURL: POST_URL });
 const POST_LIKE_API = axios.create({ baseURL: POST_LIKE_URL });
 const POST_TAG_API = axios.create({ baseURL: POST_TAG_URL });
+const COMMENT_API = axios.create({ baseURL: COMMENT_URL });
 
 export const signup = (signupDetails: any) =>
 	USER_API.post(`/signup`, signupDetails);
@@ -20,6 +22,12 @@ export const login = (loginDetails: any) =>
 
 export const getMe = (_token: string) =>
 	USER_API.get(`/me`, { headers: { Authorization: `Bearer ${_token}` } });
+
+export const getAllUsers = (_token: string) =>
+	USER_API.get(`/`, { headers: { Authorization: `Bearer ${_token}` } });
+
+export const getSingleUser = (_token: string, id: string) =>
+	USER_API.get(`/${id}`, { headers: { Authorization: `Bearer ${_token}` } });
 
 export const createPost = (_token: string, _formData: FormData) =>
 	POST_API.post(`/`, _formData, {
@@ -36,6 +44,17 @@ export const createPostTag = (
 
 export const getAllPosts = (_token: string) =>
 	POST_API.get(`/`, { headers: { Authorization: `Bearer ${_token}` } });
+
+export const getSinglePost = (_token: string, _id: string) =>
+	POST_API.get(`/${_id}`, { headers: { Authorization: `Bearer ${_token}` } });
+
+export const createCommentOnPost = (
+	_token: string,
+	details: { post: string; contents: string }
+) =>
+	COMMENT_API.post(`/`, details, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
 
 export const getIdAndPhotoOfPosts = (_token: string) =>
 	POST_API.get(`/?fields=url,-user`, {

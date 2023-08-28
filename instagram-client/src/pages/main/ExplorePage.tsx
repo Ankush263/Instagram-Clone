@@ -3,9 +3,23 @@ import { Box } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { getIdAndPhotoOfPosts } from '@/api';
 import { fetchToken } from '@/components/token';
+import PostComponent from '@/components/post/PostComponent';
+import Backdrop from '@mui/material/Backdrop';
+import CloseIcon from '@mui/icons-material/Close';
 
 function ExplorePage() {
 	const [images, setImages] = useState<any>([]);
+	const [open, setOpen] = useState(false);
+	const [details, setDetails] = useState({});
+	const [load, setLoad] = useState(false);
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+
+	const reload = () => {
+		setLoad((prev) => !prev);
+	};
 
 	const fetch = async () => {
 		try {
@@ -14,6 +28,18 @@ function ExplorePage() {
 			const imgs = res.data.data.data;
 			setImages(imgs);
 			console.log(res.data.data.data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const handleClick = async (url: string, id: string) => {
+		try {
+			setOpen((prev) => !prev);
+			console.log(url);
+			console.log(id);
+			setDetails({ url, id });
+			setLoad((prev) => !prev);
 		} catch (error) {
 			console.log(error);
 		}
@@ -34,19 +60,34 @@ function ExplorePage() {
 			</Box>
 			<Box className="w-10/12 ml-auto flex justify-center items-center">
 				<Box className="w-10/12 grid grid-cols-3 gap-1 mt-10 mb-10">
-					{images.map(({ url, key }: any) => {
+					{images.map((item: any) => {
 						return (
 							<Box className="">
 								<img
-									src={`${url}`}
+									src={`${item.url}`}
 									alt="#"
-									key={key}
-									className="w-full h-full"
+									key={item._id}
+									className="w-full h-full cursor-pointer"
+									onClick={() => handleClick(item.url, item._id)}
 								/>
 							</Box>
 						);
 					})}
 				</Box>
+				<Backdrop
+					sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+					open={open}
+				>
+					<Box className="ml-10">
+						<PostComponent details={details} load={load} />
+					</Box>
+					<Box
+						className="absolute top-3 right-6 cursor-pointer"
+						onClick={handleClose}
+					>
+						<CloseIcon fontSize="large" />
+					</Box>
+				</Backdrop>
 			</Box>
 		</Box>
 	);

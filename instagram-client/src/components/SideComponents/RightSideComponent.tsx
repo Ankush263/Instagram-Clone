@@ -1,7 +1,33 @@
 import { Box } from '@mui/material';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAllUsers, getMe } from '@/api';
+import { fetchToken } from '../token';
+import Link from 'next/link';
 
 function RightSideComponent() {
+	const [users, setUsers] = useState([]);
+	const [profile, setProfile] = useState<any>({});
+
+	const fetch = async () => {
+		try {
+			const token = fetchToken();
+			const res = await getAllUsers(token);
+			const self = await getMe(token);
+			const me = self.data.data.data;
+			setProfile(me);
+			const otherUsers = res.data.data.data.filter(
+				(data: any) => data._id !== me._id
+			);
+			setUsers(otherUsers);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	useEffect(() => {
+		fetch();
+	}, []);
+
 	const styles = {
 		component: `w-full h-full flex flex-col`,
 		bar: `w-9/12 ml-7 mt-12 flex flex-col`,
@@ -21,8 +47,8 @@ function RightSideComponent() {
 					<Box className={styles.leftSubBar}>
 						<Box className={styles.profilePlace}></Box>
 						<Box className="flex flex-col ml-3">
-							<p className="font-semibold text-sm">an.kush263</p>
-							<p className="text-sm text-darkGray">Ankush Banik</p>
+							<p className="font-semibold text-sm">{profile?.username}</p>
+							<p className="text-sm text-darkGray">{profile?.fullname}</p>
 						</Box>
 					</Box>
 					<Box className={styles.rightSubBar}>
@@ -34,60 +60,27 @@ function RightSideComponent() {
 					<p className="text-sm font-bold mr-10">See All</p>
 				</Box>
 				<Box className={styles.rightBar}>
-					<Box className={styles.rightUnBar}>
-						<Box className="h-full flex justify-center items-center">
-							<Box className="border-2 w-10 h-10 rounded-full"></Box>
-							<Box className="h-full flex flex-col ml-3 justify-center">
-								<p className="text-xs font-bold">Ankush Banik</p>
-								<p className="text-xs text-darkGray">an.kush1234</p>
+					{users.map((user: any) => {
+						return (
+							<Box className={styles.rightUnBar}>
+								<Box className="h-full flex justify-center items-center">
+									<Link
+										href={{
+											pathname: `/main/ProfilePage`,
+											query: { id: user._id },
+										}}
+									>
+										<Box className="border-2 w-10 h-10 rounded-full"></Box>
+									</Link>
+									<Box className="h-full flex flex-col ml-3 justify-center">
+										<p className="text-xs font-bold">{user?.fullname}</p>
+										<p className="text-xs text-darkGray">{user?.username}</p>
+									</Box>
+								</Box>
+								<p className={styles.blueTxt}>Follow</p>
 							</Box>
-						</Box>
-						<p className={styles.blueTxt}>Follow</p>
-					</Box>
-
-					<Box className={styles.rightUnBar}>
-						<Box className="h-full flex justify-center items-center">
-							<Box className="border-2 w-10 h-10 rounded-full"></Box>
-							<Box className="h-full flex flex-col ml-3 justify-center">
-								<p className="text-xs font-bold">Ankush Banik</p>
-								<p className="text-xs text-darkGray">an.kush1234</p>
-							</Box>
-						</Box>
-						<p className={styles.blueTxt}>Follow</p>
-					</Box>
-
-					<Box className={styles.rightUnBar}>
-						<Box className="h-full flex justify-center items-center">
-							<Box className="border-2 w-10 h-10 rounded-full"></Box>
-							<Box className="h-full flex flex-col ml-3 justify-center">
-								<p className="text-xs font-bold">Ankush Banik</p>
-								<p className="text-xs text-darkGray">an.kush1234</p>
-							</Box>
-						</Box>
-						<p className={styles.blueTxt}>Follow</p>
-					</Box>
-
-					<Box className={styles.rightUnBar}>
-						<Box className="h-full flex justify-center items-center">
-							<Box className="border-2 w-10 h-10 rounded-full"></Box>
-							<Box className="h-full flex flex-col ml-3 justify-center">
-								<p className="text-xs font-bold">Ankush Banik</p>
-								<p className="text-xs text-darkGray">an.kush1234</p>
-							</Box>
-						</Box>
-						<p className={styles.blueTxt}>Follow</p>
-					</Box>
-
-					<Box className={styles.rightUnBar}>
-						<Box className="h-full flex justify-center items-center">
-							<Box className="border-2 w-10 h-10 rounded-full"></Box>
-							<Box className="h-full flex flex-col ml-3 justify-center">
-								<p className="text-xs font-bold">Ankush Banik</p>
-								<p className="text-xs text-darkGray">an.kush1234</p>
-							</Box>
-						</Box>
-						<p className={styles.blueTxt}>Follow</p>
-					</Box>
+						);
+					})}
 				</Box>
 			</Box>
 		</Box>

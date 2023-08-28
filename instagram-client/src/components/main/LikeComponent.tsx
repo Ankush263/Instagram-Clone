@@ -46,6 +46,7 @@ function LikeComponent(props: any) {
 		setOpen(true);
 		try {
 			const token = fetchToken();
+			console.log(postId);
 			await createLikeInPost(postId as string, token);
 			setShouldFetchLikedPosts(true);
 			props.reload();

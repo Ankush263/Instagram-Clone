@@ -7,11 +7,23 @@ import { getAllPosts, getMe } from '@/api';
 import { fetchToken } from '../token';
 import CommentOutline from '../icons/CommentOutline';
 import LikeComponent from './LikeComponent';
+import { time } from '@/api/calcTime';
+import PostComponent from '../post/PostComponent';
+import CloseIcon from '@mui/icons-material/Close';
+import Backdrop from '@mui/material/Backdrop';
+import Link from 'next/link';
 
 function HomePage() {
 	const [posts, setPosts] = useState([]);
 	const [reloadComponent, setReloadComponent] = useState(false);
 	const [user, setUser] = useState<any>({});
+	const [details, setDetails] = useState({});
+	const [load, setLoad] = useState(false);
+	const [open, setOpen] = useState(false);
+
+	const handleClose = () => {
+		setOpen(false);
+	};
 
 	const fetch = async () => {
 		try {
@@ -27,29 +39,19 @@ function HomePage() {
 		}
 	};
 
-	const handleReload = () => {
-		setReloadComponent((prevState) => !prevState);
+	const handleOpenPost = async (id: string, url: string) => {
+		try {
+			setOpen(true);
+			setDetails({ id, url });
+			console.log('click');
+			setLoad((prev) => !prev);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
-	const timeAgo = (timestamp: string): string => {
-		const postDate = new Date(timestamp);
-		const currentDate = new Date();
-		const timeDifferenceInSeconds =
-			(currentDate.getTime() - postDate.getTime()) / 1000;
-
-		if (timeDifferenceInSeconds < 60) {
-			return `${Math.floor(timeDifferenceInSeconds)} sec`;
-		} else if (timeDifferenceInSeconds < 60 * 60) {
-			return `${Math.floor(timeDifferenceInSeconds / 60)} m`;
-		} else if (timeDifferenceInSeconds < 60 * 60 * 24) {
-			return `${Math.floor(timeDifferenceInSeconds / 60 / 60)} h`;
-		} else if (timeDifferenceInSeconds < 60 * 60 * 24 * 7) {
-			return `${Math.floor(timeDifferenceInSeconds / 60 / 60 / 24)} d`;
-		} else if (timeDifferenceInSeconds < 60 * 60 * 24 * 30) {
-			return `${Math.floor(timeDifferenceInSeconds / 60 / 60 / 24 / 7)} W`;
-		} else {
-			return `${Math.floor(timeDifferenceInSeconds / 60 / 60 / 24 / 30)} month`;
-		}
+	const handleReload = () => {
+		setReloadComponent((prevState) => !prevState);
 	};
 
 	useEffect(() => {
@@ -84,11 +86,27 @@ function HomePage() {
 						return (
 							<Box className={styles.postBox} key={post._id}>
 								<Box className={styles.postAvaterBox}>
-									<Box className="w-[35px] h-[35px] rounded-full border-2"></Box>
-									<p className="text-xs font-bold ml-2">{post.user.username}</p>
+									<Link
+										href={{
+											pathname: `/main/ProfilePage`,
+											query: { id: post.user._id },
+										}}
+									>
+										<Box className="w-[35px] h-[35px] rounded-full border-2 cursor-pointer"></Box>
+									</Link>
+									<Link
+										href={{
+											pathname: `/main/ProfilePage`,
+											query: { id: post.user._id },
+										}}
+									>
+										<p className="text-xs font-bold ml-2 cursor-pointer">
+											{post.user.username}
+										</p>
+									</Link>
 									<span className="w-1 h-1 border-2 border-darkGray rounded-full ml-3"></span>
 									<p className="text-sm text-darkGray ml-1">
-										{timeAgo(post.createdAt)}
+										{time(post.createdAt)}
 									</p>
 								</Box>
 								<Box className={styles.postMain}>
@@ -98,7 +116,10 @@ function HomePage() {
 									<Box className="cursor-pointer">
 										<LikeComponent _id={post._id} reload={handleReload} />
 									</Box>
-									<Box className="ml-3">
+									<Box
+										className="ml-3"
+										onClick={() => handleOpenPost(post?._id, post?.url)}
+									>
 										<CommentOutline />
 									</Box>
 								</Box>
@@ -110,29 +131,39 @@ function HomePage() {
 								</Box>
 								<Box className="w-full">
 									<span className="font-semibold text-sm">
-										{user.username}
+										{post.user.username}
 										{'    '}
 									</span>
 									<span className="text-sm text-left">{post.caption}</span>
 								</Box>
 								<Box className="w-full cursor-pointer">
-									<span className="text-sm text-darkGray">
+									<span
+										className="text-sm text-darkGray"
+										onClick={() => handleOpenPost(post?._id, post?.url)}
+									>
 										View all comments...
 									</span>
 								</Box>
-								<Box className="w-full cursor-pointer">
-									<span className="font-semibold text-sm">
-										{user.username}
-										{'    '}
-									</span>
-									<span className="text-sm text-left">{post.caption}</span>
-								</Box>
-								<Box className="w-11/12 border-b-2 mt-8 border-gray"></Box>
+								<Box className="w-11/12 border-b-2 mt-5 border-gray"></Box>
 							</Box>
 						);
 					})}
 				</Box>
 			</Box>
+			<Backdrop
+				sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+				open={open}
+			>
+				<Box className="ml-10">
+					<PostComponent details={details} load={load} />
+				</Box>
+				<Box
+					className="absolute top-3 right-6 cursor-pointer"
+					onClick={handleClose}
+				>
+					<CloseIcon fontSize="large" />
+				</Box>
+			</Backdrop>
 			<Box className={styles.rightBar}>
 				{/* 1220 */}
 				<RightSideComponent />
