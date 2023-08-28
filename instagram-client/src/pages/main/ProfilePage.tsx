@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import { Box } from '@mui/material';
 import SettingsIcon from '@/components/icons/SettingsIcon';
-import { getMe, getSingleUser } from '@/api';
+import { getMe, getSingleUser, getMyStory, getStoriesByUser } from '@/api';
 import { fetchToken } from '@/components/token';
 import Backdrop from '@mui/material/Backdrop';
 import PostComponent from '@/components/post/PostComponent';
@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { AxiosResponse } from 'axios';
 import Add from '@/components/icons/Add';
 import StoryBox from '@/components/Stories/StoryBox';
+import StatusComponent from '@/components/status/StatusComponent';
 
 function ProfilePage() {
 	const router = useRouter();
@@ -20,10 +21,30 @@ function ProfilePage() {
 	const [details, setDetails] = useState({});
 	const [load, setLoad] = useState(false);
 	const [openStory, setOpenStory] = useState(false);
+	const [stories, setStories] = useState<any>([]);
+	const [statusOpen, setStatusOpen] = useState(false);
+	const [statusUrl, setStatusUrl] = useState('');
+	const [statusId, setStatusId] = useState('');
+	const [progress, setProgress] = useState(0);
 
 	const handleClose = () => {
 		setOpen(false);
 		setOpenStory(false);
+	};
+
+	const handleStatusClose = () => {
+		setStatusOpen(false);
+		setStatusUrl('');
+		setProgress(0);
+	};
+
+	const handleStatusOpen = (url: string, id: string) => {
+		setStatusOpen(true);
+		setStatusUrl(url);
+		setStatusId(id);
+		setTimeout(() => {
+			handleStatusClose();
+		}, 5000);
 	};
 
 	const handleClick = (url: string, id: string) => {
@@ -45,6 +66,14 @@ function ProfilePage() {
 			if (res.data) {
 				setSelf(res?.data.data.data);
 			}
+			let story;
+			if (Object.keys(data).length === 0) {
+				story = await getMyStory(token);
+			} else {
+				story = await getStoriesByUser(token, data.id as string);
+			}
+			// console.log(story.data.data.data);
+			setStories(story.data.data.data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -82,12 +111,6 @@ function ProfilePage() {
 				sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 				open={openStory}
 			>
-				{/* <Box
-					className="absolute top-3 right-6 cursor-pointer "
-					onClick={handleClose}
-				>
-					<CloseIcon fontSize="large" />
-				</Box> */}
 				<StoryBox handleClose={handleClose} />
 			</Backdrop>
 			<Box className="w-10/12 flex justify-center items-center ml-auto">
@@ -136,9 +159,38 @@ function ProfilePage() {
 								<Add />
 							</Box>
 						</Box>
-						<Box className="w-20 h-20 rounded-full border-2 border-gray ml-7"></Box>
-						<Box className="w-20 h-20 rounded-full border-2 border-gray ml-7"></Box>
+						{stories?.map((story: any) => {
+							return (
+								<Box
+									className="w-20 h-20 rounded-full border-2 border-gray ml-7 cursor-pointer"
+									key={story?._id}
+								>
+									<img
+										src={story?.url}
+										className="w-full h-full rounded-full"
+										onClick={() => handleStatusOpen(story?.url, story?._id)}
+									/>
+
+									<Backdrop
+										sx={{
+											color: '#fff',
+											zIndex: (theme) => theme.zIndex.drawer + 1,
+										}}
+										open={statusOpen}
+									>
+										<StatusComponent
+											url={statusUrl}
+											id={statusId}
+											progress={progress}
+											setProgress={setProgress}
+											handleStatusClose={handleStatusClose}
+										/>
+									</Backdrop>
+								</Box>
+							);
+						})}
 					</Box>
+
 					<Box className="border-b-2 w-full mt-10 border-gray"></Box>
 					<Box className="w-full mt-10 grid grid-cols-3 gap-1">
 						{self?.posts?.map((post: any) => {

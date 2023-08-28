@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Story from '@/components/Stories/Story';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import RightSideComponent from '@/components/SideComponents/RightSideComponent';
-import { getAllPosts, getMe } from '@/api';
+import { getAllPosts } from '@/api';
 import { fetchToken } from '../token';
 import CommentOutline from '../icons/CommentOutline';
 import LikeComponent from './LikeComponent';
@@ -16,7 +16,6 @@ import Link from 'next/link';
 function HomePage() {
 	const [posts, setPosts] = useState([]);
 	const [reloadComponent, setReloadComponent] = useState(false);
-	const [user, setUser] = useState<any>({});
 	const [details, setDetails] = useState({});
 	const [load, setLoad] = useState(false);
 	const [open, setOpen] = useState(false);
@@ -29,11 +28,7 @@ function HomePage() {
 		try {
 			const token = fetchToken();
 			const post = await getAllPosts(token);
-			const fetchUser = await getMe(token);
-			setUser(fetchUser.data.data.data);
 			setPosts(post.data.data.data);
-			console.log('post: ', post.data.data.data);
-			console.log('user: ', fetchUser.data.data.data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -70,7 +65,7 @@ function HomePage() {
 		scrollBox: `w-full mt-10 flex flex-col justify-center items-center`,
 		postBox: `w-[450px] ml-[100px] mb-20 flex flex-col justify-center items-center`,
 		postAvaterBox: `w-full h-[40px] flex justify-start items-center mb-auto`,
-		postMain: `w-full h-[550px] border-2 border-gray flex justify-between items-center`,
+		postMain: `w-full h-[550px] border-2 border-gray flex justify-center items-center`,
 	};
 	return (
 		<Box className={styles.page}>
@@ -81,6 +76,7 @@ function HomePage() {
 				<Box className={styles.navBar}>
 					<Story />
 				</Box>
+
 				<Box className={styles.scrollBox}>
 					{posts.map((post: any) => {
 						return (
@@ -110,7 +106,11 @@ function HomePage() {
 									</p>
 								</Box>
 								<Box className={styles.postMain}>
-									<img src={post.url} alt="#" />
+									<img
+										src={post.url}
+										className="max-w-full max-h-full"
+										alt="#"
+									/>
 								</Box>
 								<Box className="w-full h-[40px] flex justify-start items-start mt-3">
 									<Box className="cursor-pointer">

@@ -6,6 +6,7 @@ import { fetchToken } from '@/components/token';
 import PostComponent from '@/components/post/PostComponent';
 import Backdrop from '@mui/material/Backdrop';
 import CloseIcon from '@mui/icons-material/Close';
+import Masonry from 'react-masonry-css';
 
 function ExplorePage() {
 	const [images, setImages] = useState<any>([]);
@@ -45,6 +46,12 @@ function ExplorePage() {
 		}
 	};
 
+	const breakpoints = {
+		default: 3,
+		1100: 2,
+		700: 1,
+	};
+
 	useEffect(() => {
 		fetch();
 	}, []);
@@ -58,22 +65,23 @@ function ExplorePage() {
 			<Box className={styles.leftBar}>
 				<LeftSideComponent />
 			</Box>
-			<Box className="w-10/12 ml-auto flex justify-center items-center">
-				<Box className="w-10/12 grid grid-cols-3 gap-1 mt-10 mb-10">
-					{images.map((item: any) => {
-						return (
-							<Box className="">
-								<img
-									src={`${item.url}`}
-									alt="#"
-									key={item._id}
-									className="w-full h-full cursor-pointer"
-									onClick={() => handleClick(item.url, item._id)}
-								/>
-							</Box>
-						);
-					})}
-				</Box>
+			<Box className="w-8/12 ml-auto mr-40 flex justify-center items-center">
+				<Masonry
+					breakpointCols={breakpoints}
+					className="my-masonry-grid"
+					columnClassName="my-masonry-grid_column"
+				>
+					{images.map((item: any) => (
+						<div key={item._id} className="my-masonry-grid_item">
+							<img
+								src={item.url}
+								alt="#"
+								className="max-w-full max-h-full cursor-pointer"
+								onClick={() => handleClick(item.url, item._id)}
+							/>
+						</div>
+					))}
+				</Masonry>
 				<Backdrop
 					sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 					open={open}

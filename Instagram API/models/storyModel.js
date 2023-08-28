@@ -28,6 +28,15 @@ const storySchema = new mongoose.Schema(
 
 storySchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 
+storySchema.pre(/^find/, function (next) {
+	this.populate({
+		path: 'user',
+		select: 'avater username',
+	});
+
+	next();
+});
+
 const Story = mongoose.model('Story', storySchema);
 
 module.exports = Story;

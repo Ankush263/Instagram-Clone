@@ -1,10 +1,23 @@
 import { Box } from '@mui/material';
 import React, { ChangeEvent, useState, useEffect } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import { createStory } from '@/api';
+import { fetchToken } from '../token';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function StoryBox(props: any) {
 	const [selectedImage, setSelectedImage] = useState<any>('');
 	const [uploaded, setUploaded] = useState(false);
+	const [imgFile, setImgFile] = useState<any>('');
+	const [open, setOpen] = React.useState(false);
+
+	const handleClose = () => {
+		setOpen(false);
+	};
+	const handleOpen = () => {
+		setOpen(true);
+	};
 
 	const close = () => {
 		props.handleClose();
@@ -12,8 +25,24 @@ function StoryBox(props: any) {
 		setUploaded(false);
 	};
 
+	const handleUpload = async () => {
+		handleOpen();
+		try {
+			const token = fetchToken();
+			const formData = new FormData();
+			formData.append('url', imgFile);
+			await createStory(token, formData);
+			handleClose();
+			close();
+		} catch (error) {
+			console.log(error);
+			handleClose();
+		}
+	};
+
 	const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files && e.target.files[0];
+		setImgFile(file);
 		if (file) {
 			const reader = new FileReader();
 			reader.onload = (e: ProgressEvent<FileReader>) => {
@@ -37,9 +66,18 @@ function StoryBox(props: any) {
 			<Box className={styles.closeBox} onClick={close}>
 				<CloseIcon fontSize="large" />
 			</Box>
+			<Backdrop
+				sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+				open={open}
+				onClick={handleClose}
+			>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 			{uploaded ? (
-				<Box>
-					<span className={styles.postBtn}>post</span>
+				<Box className="w-full h-full flex justify-center items-center">
+					<span className={styles.postBtn} onClick={handleUpload}>
+						post
+					</span>
 					<img
 						src={selectedImage}
 						alt="Selected"

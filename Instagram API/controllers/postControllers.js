@@ -9,6 +9,8 @@ const uuid = require('uuid/v1');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
+const { s3 } = require('./s3');
+const { uploadImage } = require('./s3bucket');
 
 exports.checkOwner = catchAsync(async (req, res, next) => {
 	const post = await Post.findById(req.params.id);
@@ -54,51 +56,51 @@ exports.getPostsByUsers = catchAsync(async (req, res, next) => {
 	});
 });
 
-const s3 = new AWS.S3({
-	credentials: {
-		accessKeyId: `${process.env.ACCESSKEYID}`,
-		secretAccessKey: `${process.env.SECRETACCESSKEY}`,
-	},
-	signatureVersion: 'v4',
-	region: 'us-east-1',
-});
+// const s3 = new AWS.S3({
+// 	credentials: {
+// 		accessKeyId: `${process.env.ACCESSKEYID}`,
+// 		secretAccessKey: `${process.env.SECRETACCESSKEY}`,
+// 	},
+// 	signatureVersion: 'v4',
+// 	region: 'us-east-1',
+// });
 
-const s3Storage = multerS3({
-	s3: s3,
-	bucket: `${process.env.BUCKET_NAME}`,
-	contentType: multerS3.AUTO_CONTENT_TYPE,
-	metadata: (req, file, cb) => {
-		cb(null, { fieldname: file.fieldname });
-	},
-	key: (req, file, cb) => {
-		const fileName = req.user.id + '/' + uuid() + '.jpeg';
-		cb(null, fileName);
-	},
-});
+// const s3Storage = multerS3({
+// 	s3: s3,
+// 	bucket: `${process.env.BUCKET_NAME}`,
+// 	contentType: multerS3.AUTO_CONTENT_TYPE,
+// 	metadata: (req, file, cb) => {
+// 		cb(null, { fieldname: file.fieldname });
+// 	},
+// 	key: (req, file, cb) => {
+// 		const fileName = req.user.id + '/' + uuid() + '.jpeg';
+// 		cb(null, fileName);
+// 	},
+// });
 
-function sanitizeFile(file, cb) {
-	const fileExts = ['.png', '.jpg', '.jpeg'];
+// function sanitizeFile(file, cb) {
+// 	const fileExts = ['.png', '.jpg', '.jpeg'];
 
-	const isAllowedExt = fileExts.includes(
-		path.extname(file.originalname.toLowerCase())
-	);
-	const isAllowedMimeType = file.mimetype.startsWith('image/');
-	if (isAllowedExt && isAllowedMimeType) {
-		return cb(null, true); // no errors
-	} else {
-		cb('Error: File type not allowed!');
-	}
-}
+// 	const isAllowedExt = fileExts.includes(
+// 		path.extname(file.originalname.toLowerCase())
+// 	);
+// 	const isAllowedMimeType = file.mimetype.startsWith('image/');
+// 	if (isAllowedExt && isAllowedMimeType) {
+// 		return cb(null, true); // no errors
+// 	} else {
+// 		cb('Error: File type not allowed!');
+// 	}
+// }
 
-const uploadImage = multer({
-	storage: s3Storage,
-	fileFilter: (req, file, callback) => {
-		sanitizeFile(file, callback);
-	},
-	limits: {
-		fileSize: 1024 * 1024 * 2,
-	},
-});
+// const uploadImage = multer({
+// 	storage: s3Storage,
+// 	fileFilter: (req, file, callback) => {
+// 		sanitizeFile(file, callback);
+// 	},
+// 	limits: {
+// 		fileSize: 1024 * 1024 * 2,
+// 	},
+// });
 
 exports.deletePhoto = catchAsync(async (req, res, next) => {
 	const post = await Post.findById(req.params.id);

@@ -7,12 +7,14 @@ const POST_URL = `${URL}/api/v1/post`;
 const POST_LIKE_URL = `${URL}/api/v1/postLikes`;
 const POST_TAG_URL = `${URL}/api/v1/postTag`;
 const COMMENT_URL = `${URL}/api/v1/comment`;
+const STORY_URL = `${URL}/api/v1/story`;
 
 const USER_API = axios.create({ baseURL: USER_URL });
 const POST_API = axios.create({ baseURL: POST_URL });
 const POST_LIKE_API = axios.create({ baseURL: POST_LIKE_URL });
 const POST_TAG_API = axios.create({ baseURL: POST_TAG_URL });
 const COMMENT_API = axios.create({ baseURL: COMMENT_URL });
+const STORY_API = axios.create({ baseURL: STORY_URL });
 
 export const signup = (signupDetails: any) =>
 	USER_API.post(`/signup`, signupDetails);
@@ -72,5 +74,30 @@ export const createLikeInPost = (postId: string, _token: string) =>
 
 export const deleteLikeFromPost = (likeId: string, _token: string) =>
 	POST_LIKE_API.delete(`/${likeId}`, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
+export const createStory = (_token: string, details: FormData) =>
+	STORY_API.post(`/`, details, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
+export const getMyStory = (_token: string) =>
+	STORY_API.get(`/myStory`, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
+export const getStoriesByUser = (_token: string, id: string) =>
+	STORY_API.get(`/storyByUserId/${id}`, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
+export const getAllStories = (_token: string) =>
+	STORY_API.get(`/`, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
+export const deleteStory = (_token: string, _id: string) =>
+	STORY_API.delete(`/${_id}`, {
 		headers: { Authorization: `Bearer ${_token}` },
 	});
