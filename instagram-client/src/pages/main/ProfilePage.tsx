@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import { Box } from '@mui/material';
 import SettingsIcon from '@/components/icons/SettingsIcon';
-import { getMe, getSingleUser, getMyStory, getStoriesByUser } from '@/api';
+import {
+	getMe,
+	getSingleUser,
+	getMyStory,
+	getStoriesByUser,
+	updateBio,
+} from '@/api';
 import { fetchToken } from '@/components/token';
 import Backdrop from '@mui/material/Backdrop';
 import PostComponent from '@/components/post/PostComponent';
@@ -12,6 +18,7 @@ import { AxiosResponse } from 'axios';
 import Add from '@/components/icons/Add';
 import StoryBox from '@/components/Stories/StoryBox';
 import StatusComponent from '@/components/status/StatusComponent';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ProfilePage() {
 	const router = useRouter();
@@ -26,6 +33,9 @@ function ProfilePage() {
 	const [statusUrl, setStatusUrl] = useState('');
 	const [statusId, setStatusId] = useState('');
 	const [progress, setProgress] = useState(0);
+	const [openEditProfile, setOpeEditProfile] = useState(false);
+	const [openLoad, setOpenLoad] = useState(false);
+	const [bio, setBio] = useState('');
 
 	const handleClose = () => {
 		setOpen(false);
@@ -54,6 +64,15 @@ function ProfilePage() {
 		setLoad((prev) => !prev);
 	};
 
+	const handleEdit = async () => {
+		setOpeEditProfile(true);
+	};
+
+	const handleCloseEditBio = () => {
+		setOpeEditProfile(false);
+		setOpenLoad(false);
+	};
+
 	const fetch = async () => {
 		try {
 			const token = fetchToken();
@@ -76,6 +95,22 @@ function ProfilePage() {
 			setStories(story.data.data.data);
 		} catch (error) {
 			console.log(error);
+		}
+	};
+
+	const handleUpdateBio = async () => {
+		setOpenLoad(true);
+		try {
+			const token = fetchToken();
+			console.log(bio);
+			await updateBio(token, { bio });
+			setOpeEditProfile(false);
+			setBio('');
+			fetch();
+			setOpenLoad(false);
+		} catch (error) {
+			console.log(error);
+			setOpenLoad(false);
 		}
 	};
 
@@ -122,8 +157,60 @@ function ProfilePage() {
 						<Box className={styles.topRight}>
 							<Box className="w-10/12 h-12 flex justify-start items-center">
 								<p className="text-xl mr-5">{self?.username}</p>
-								<button className={styles.btn}>Edit profile</button>
-								<button className={styles.btn}>View Archive</button>
+								<button className={styles.btn} onClick={handleEdit}>
+									Edit bio
+								</button>
+
+								{/* Edit Bio backdrop */}
+
+								<Backdrop
+									sx={{
+										color: '#fff',
+										zIndex: (theme) => theme.zIndex.drawer + 1,
+									}}
+									open={openEditProfile}
+								>
+									<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
+										<span className="mr-auto ml-7 mb-5">Bio:</span>
+										<Box
+											className="absolute top-4 right-4 cursor-pointer"
+											onClick={handleCloseEditBio}
+										>
+											<CloseIcon fontSize="large" />
+										</Box>
+										<textarea
+											className="mb-4 font-xs text-black"
+											value={bio}
+											onChange={(e) => setBio(e.target.value)}
+										/>
+										<button
+											className="w-20 h-8 rounded-md bg-skyBlue"
+											// onClick={() => setOpeEditProfile(false)}
+											onClick={handleUpdateBio}
+										>
+											update
+										</button>
+									</Box>
+								</Backdrop>
+
+								{/* ------------------- */}
+
+								{/* Loading backdrop */}
+
+								<Backdrop
+									sx={{
+										color: '#fff',
+										zIndex: (theme) => theme.zIndex.drawer + 1,
+									}}
+									open={openLoad}
+									onClick={() => setOpenLoad(false)}
+								>
+									<CircularProgress color="inherit" />
+								</Backdrop>
+
+								{/* ------------------- */}
+
+								<button className={styles.btn}>Upload photo</button>
 								<Box className="ml-10">
 									<SettingsIcon />
 								</Box>

@@ -31,6 +31,11 @@ export const getAllUsers = (_token: string) =>
 export const getSingleUser = (_token: string, id: string) =>
 	USER_API.get(`/${id}`, { headers: { Authorization: `Bearer ${_token}` } });
 
+export const updateBio = (_token: string, details: { bio: string }) =>
+	USER_API.patch(`/updateMe`, details, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
 export const createPost = (_token: string, _formData: FormData) =>
 	POST_API.post(`/`, _formData, {
 		headers: { Authorization: `Bearer ${_token}` },
