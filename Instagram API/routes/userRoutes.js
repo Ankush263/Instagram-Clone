@@ -9,6 +9,9 @@ const {
 	updateMe,
 	getMe,
 	deleteMe,
+	uploadImg,
+	updateAvater,
+	deleteAvater,
 } = require('../controllers/userControllers');
 
 const {
@@ -28,6 +31,8 @@ router.route('/logout').get(logout);
 
 router.use(protect);
 
+router.route('/updateAvater').patch(cleanCacheUser, uploadImg, updateAvater);
+router.route('/deleteAvater').patch(cleanCacheUser, deleteAvater);
 router.route('/updateMe').patch(cleanCacheUser, updateMe);
 router.route('/me').get(getMe, getOneUser);
 router.route('/deleteMe').delete(cleanCacheUser, deleteMe);

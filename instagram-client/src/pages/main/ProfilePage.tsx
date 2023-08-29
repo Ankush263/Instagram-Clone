@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import { Box } from '@mui/material';
 import SettingsIcon from '@/components/icons/SettingsIcon';
@@ -8,6 +8,8 @@ import {
 	getMyStory,
 	getStoriesByUser,
 	updateBio,
+	uploadAvater,
+	deleteAvater,
 } from '@/api';
 import { fetchToken } from '@/components/token';
 import Backdrop from '@mui/material/Backdrop';
@@ -19,6 +21,7 @@ import Add from '@/components/icons/Add';
 import StoryBox from '@/components/Stories/StoryBox';
 import StatusComponent from '@/components/status/StatusComponent';
 import CircularProgress from '@mui/material/CircularProgress';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function ProfilePage() {
 	const router = useRouter();
@@ -36,6 +39,10 @@ function ProfilePage() {
 	const [openEditProfile, setOpeEditProfile] = useState(false);
 	const [openLoad, setOpenLoad] = useState(false);
 	const [bio, setBio] = useState('');
+	const [openAvaterUpload, setOpenAvaterUpload] = useState(false);
+	const [avater, setAvater] = useState<any>('');
+	const [avaterImg, setAvaterImg] = useState<any>('');
+	const [upload, setUpload] = useState(false);
 
 	const handleClose = () => {
 		setOpen(false);
@@ -71,6 +78,9 @@ function ProfilePage() {
 	const handleCloseEditBio = () => {
 		setOpeEditProfile(false);
 		setOpenLoad(false);
+		setOpenAvaterUpload(false);
+		setAvater('');
+		setUpload(false);
 	};
 
 	const fetch = async () => {
@@ -91,7 +101,7 @@ function ProfilePage() {
 			} else {
 				story = await getStoriesByUser(token, data.id as string);
 			}
-			// console.log(story.data.data.data);
+			console.log('self: ', res.data.data.data);
 			setStories(story.data.data.data);
 		} catch (error) {
 			console.log(error);
@@ -102,10 +112,52 @@ function ProfilePage() {
 		setOpenLoad(true);
 		try {
 			const token = fetchToken();
-			console.log(bio);
 			await updateBio(token, { bio });
 			setOpeEditProfile(false);
 			setBio('');
+			fetch();
+			setOpenLoad(false);
+		} catch (error) {
+			console.log(error);
+			setOpenLoad(false);
+		}
+	};
+
+	const handleDeleteProfilePic = async () => {
+		setOpenLoad(true);
+		try {
+			const token = fetchToken();
+			await deleteAvater(token);
+			fetch();
+			setOpenLoad(false);
+		} catch (error) {
+			console.log(error);
+			setOpenLoad(false);
+		}
+	};
+
+	const handleChangeAvater = async (e: ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files && e.target.files[0];
+		setAvaterImg(file);
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e: ProgressEvent<FileReader>) => {
+				if (e.target) {
+					setAvater(e.target.result as string);
+					setUpload(true);
+				}
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const uploadProfilePic = async () => {
+		setOpenLoad(true);
+		try {
+			const token = fetchToken();
+			const formData = new FormData();
+			formData.append('avater', avaterImg);
+			await uploadAvater(token, formData);
 			fetch();
 			setOpenLoad(false);
 		} catch (error) {
@@ -135,7 +187,8 @@ function ProfilePage() {
 		topRight: `h-full w-8/12 flex flex-col justify-between items-start`,
 		bottomMain: `h-2/6 w-full flex justify-start items-center mt-7`,
 		midBox: `w-full h-10 flex justify-start items-center`,
-		btn: `bg-grayshBlack active:bg-gray w-[100px] h-8 rounded-lg text-sm font-semibold mr-3`,
+		btn: `bg-grayshBlack active:bg-gray w-[100px] h-8 rounded-lg flex justify-center items-center text-sm font-semibold mr-3`,
+		btn2: `bg-red active:bg-gray w-[100px] h-8 rounded-lg flex justify-center items-center text-sm font-semibold mr-3`,
 	};
 	return (
 		<Box className={styles.page}>
@@ -152,7 +205,16 @@ function ProfilePage() {
 				<Box className={styles.main}>
 					<Box className={styles.topMain}>
 						<Box className={styles.topLeft}>
-							<Box className="border-2 w-[150px] h-[150px] rounded-full"></Box>
+							<Box className="w-[150px] h-[150px] rounded-full">
+								{self?.avater ? (
+									<img
+										src={self?.avater}
+										className="w-full h-full rounded-full"
+									/>
+								) : (
+									<AccountCircleIcon className="w-full h-full" />
+								)}
+							</Box>
 						</Box>
 						<Box className={styles.topRight}>
 							<Box className="w-10/12 h-12 flex justify-start items-center">
@@ -185,7 +247,6 @@ function ProfilePage() {
 										/>
 										<button
 											className="w-20 h-8 rounded-md bg-skyBlue"
-											// onClick={() => setOpeEditProfile(false)}
 											onClick={handleUpdateBio}
 										>
 											update
@@ -194,6 +255,52 @@ function ProfilePage() {
 								</Backdrop>
 
 								{/* ------------------- */}
+
+								<Backdrop
+									sx={{
+										color: '#fff',
+										zIndex: (theme) => theme.zIndex.drawer + 1,
+									}}
+									open={openAvaterUpload}
+								>
+									<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
+										<Box
+											className="absolute top-4 right-4 cursor-pointer"
+											onClick={handleCloseEditBio}
+										>
+											<CloseIcon fontSize="large" />
+										</Box>
+										<Box className="w-[100px] h-[100px] rounded-full mb-4">
+											{avater && (
+												<img
+													src={avater}
+													alt="Avatar"
+													className="w-full h-full rounded-full bg-darkGray"
+												/>
+											)}
+										</Box>
+										{upload ? (
+											<button className={styles.btn} onClick={uploadProfilePic}>
+												upload
+											</button>
+										) : (
+											<Box>
+												<input
+													type="file"
+													id="actual-btn"
+													hidden
+													onChange={handleChangeAvater}
+												/>
+												<label
+													htmlFor="actual-btn"
+													className="px-2 h-8 rounded-md bg-skyBlue flex justify-center items-center"
+												>
+													update profile pic
+												</label>
+											</Box>
+										)}
+									</Box>
+								</Backdrop>
 
 								{/* Loading backdrop */}
 
@@ -210,7 +317,23 @@ function ProfilePage() {
 
 								{/* ------------------- */}
 
-								<button className={styles.btn}>Upload photo</button>
+								{!self?.avater ? (
+									<button
+										className={styles.btn}
+										onClick={() => setOpenAvaterUpload(true)}
+									>
+										Upload photo
+									</button>
+								) : (
+									<button
+										className={styles.btn2}
+										// onClick={() => setOpenAvaterUpload(true)}
+										onClick={handleDeleteProfilePic}
+									>
+										Delete photo
+									</button>
+								)}
+
 								<Box className="ml-10">
 									<SettingsIcon />
 								</Box>

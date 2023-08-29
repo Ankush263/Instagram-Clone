@@ -18,10 +18,6 @@ function ExplorePage() {
 		setOpen(false);
 	};
 
-	const reload = () => {
-		setLoad((prev) => !prev);
-	};
-
 	const fetch = async () => {
 		try {
 			const token = fetchToken();

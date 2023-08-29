@@ -25,6 +25,7 @@ module.exports = {
 			skyBlue: '#0095F6',
 			fuchsia: colors.fuchsia,
 			yellow: 'rgb(234 179 8)',
+			red: '#F35369',
 		},
 	},
 	plugins: [],

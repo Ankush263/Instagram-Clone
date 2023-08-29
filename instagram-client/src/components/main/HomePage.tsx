@@ -12,6 +12,7 @@ import PostComponent from '../post/PostComponent';
 import CloseIcon from '@mui/icons-material/Close';
 import Backdrop from '@mui/material/Backdrop';
 import Link from 'next/link';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function HomePage() {
 	const [posts, setPosts] = useState([]);
@@ -34,11 +35,10 @@ function HomePage() {
 		}
 	};
 
-	const handleOpenPost = async (id: string, url: string) => {
+	const handleOpenPost = async (id: string, url: string, avater: string) => {
 		try {
 			setOpen(true);
-			setDetails({ id, url });
-			console.log('click');
+			setDetails({ id, url, avater });
 			setLoad((prev) => !prev);
 		} catch (error) {
 			console.log(error);
@@ -61,10 +61,10 @@ function HomePage() {
 		main: `w-6/12 flex flex-col justify-start items-center mb-auto ml-[300px]`,
 		rightBar: `h-screen w-4/12 mb-auto`,
 		rightBarHidden: `hidden`,
-		navBar: `w-10/12 h-[95px] ml-auto mt-10`,
+		navBar: `w-10/12 h-[95px] ml-auto mt-10 flex justify-between items-center`,
 		scrollBox: `w-full mt-10 flex flex-col justify-center items-center`,
 		postBox: `w-[450px] ml-[100px] mb-20 flex flex-col justify-center items-center`,
-		postAvaterBox: `w-full h-[40px] flex justify-start items-center mb-auto`,
+		postAvaterBox: `w-full h-[40px] flex justify-start items-center mb-5`,
 		postMain: `w-full h-[550px] border-2 border-gray flex justify-center items-center`,
 	};
 	return (
@@ -88,7 +88,16 @@ function HomePage() {
 											query: { id: post.user._id },
 										}}
 									>
-										<Box className="w-[35px] h-[35px] rounded-full border-2 cursor-pointer"></Box>
+										<Box className="w-[35px] h-[35px] rounded-full cursor-pointer">
+											{post?.user?.avater ? (
+												<img
+													src={post?.user?.avater}
+													className="w-full h-full rounded-full"
+												/>
+											) : (
+												<AccountCircleIcon className="w-full h-full" />
+											)}
+										</Box>
 									</Link>
 									<Link
 										href={{
@@ -118,7 +127,9 @@ function HomePage() {
 									</Box>
 									<Box
 										className="ml-3"
-										onClick={() => handleOpenPost(post?._id, post?.url)}
+										onClick={() =>
+											handleOpenPost(post?._id, post?.url, post?.user.avater)
+										}
 									>
 										<CommentOutline />
 									</Box>
@@ -139,7 +150,9 @@ function HomePage() {
 								<Box className="w-full cursor-pointer">
 									<span
 										className="text-sm text-darkGray"
-										onClick={() => handleOpenPost(post?._id, post?.url)}
+										onClick={() =>
+											handleOpenPost(post?._id, post?.url, post?.user?.avater)
+										}
 									>
 										View all comments...
 									</span>

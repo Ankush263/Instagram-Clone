@@ -98,7 +98,7 @@ function PostComponent(props: any) {
 		<Box className={styles.component}>
 			<Box className={styles.left} onClick={() => console.log(props)}>
 				<img
-					src={props.details.url}
+					src={props?.details?.url}
 					alt="#"
 					className="max-w-full max-h-full ml-auto"
 				/>
@@ -111,7 +111,17 @@ function PostComponent(props: any) {
 			<Box className={styles.right}>
 				<Box className="h-[90px] w-full border-b-2 border-gray flex justify-between items-center">
 					<Box className="ml-4 flex">
-						<Box className="border-2 h-10 w-10 rounded-full"></Box>
+						<Box className="h-10 w-10 rounded-full">
+							{post?.user?.avater ? (
+								<img
+									src={post?.user?.avater}
+									alt="#"
+									className="w-full h-full rounded-full"
+								/>
+							) : (
+								<AccountCircleIcon className="w-full h-full" />
+							)}
+						</Box>
 						<Box className="h-10 flex flex-col ml-4">
 							<span className="text-sm font-semibold">
 								{post?.user?.username}
@@ -132,7 +142,17 @@ function PostComponent(props: any) {
 				</Backdrop>
 				<Box className="h-[400px] w-full border-b-2 border-gray">
 					<Box className="flex ml-4 mt-2">
-						<Box className="border-2 h-9 w-9 rounded-full"></Box>
+						<Box className="h-9 w-9 rounded-full">
+							{post?.user?.avater ? (
+								<img
+									src={post?.user?.avater}
+									alt="#"
+									className="w-full h-full rounded-full"
+								/>
+							) : (
+								<AccountCircleIcon className="w-full h-full" />
+							)}
+						</Box>
 						<Box className="h-10 ml-4 flex flex-col">
 							<span className="text-sm font-semibold">
 								{post?.user?.username}
@@ -149,6 +169,7 @@ function PostComponent(props: any) {
 										content={i.contents}
 										createdAt={i.createdAt}
 										name={i.user.username}
+										avater={i.user.avater}
 									/>
 								</Box>
 							);
@@ -168,7 +189,17 @@ function PostComponent(props: any) {
 					<span className="ml-5 text-darkGray">{post?.likesNum}</span>
 				</Box>
 				<Box className="h-[55px] w-full flex justify-between items-center">
-					<Box className="border-2 h-8 w-8 rounded-full ml-4"></Box>
+					<Box className="h-8 w-8 rounded-full ml-4">
+						{post?.user?.avater ? (
+							<img
+								src={post?.user?.avater}
+								alt="#"
+								className="w-full h-full rounded-full"
+							/>
+						) : (
+							<AccountCircleIcon className="w-full h-full" />
+						)}
+					</Box>
 					<textarea
 						className="text-white w-[350px] bg-black outline-none"
 						placeholder="Add a comment..."

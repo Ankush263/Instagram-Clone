@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllUsers, getMe } from '@/api';
 import { fetchToken } from '../token';
 import Link from 'next/link';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function RightSideComponent() {
 	const [users, setUsers] = useState([]);
@@ -34,7 +35,7 @@ function RightSideComponent() {
 		subBar: `w-full h-20 flex`,
 		leftSubBar: `w-8/12 flex justify-start items-center`,
 		rightSubBar: `w-4/12 flex justify-center items-center `,
-		profilePlace: `border-2 w-[75px] h-[75px] rounded-full`,
+		profilePlace: `w-[75px] h-[75px] rounded-full`,
 		blueTxt: `text-xs text-skyBlue cursor-pointer`,
 		smallBox: `w-full h-6 flex justify-between items-center mt-3`,
 		rightBar: `w-11/12 h-80 flex flex-col justify-start items-center mt-3`,
@@ -45,7 +46,16 @@ function RightSideComponent() {
 			<Box className={styles.bar}>
 				<Box className={styles.subBar}>
 					<Box className={styles.leftSubBar}>
-						<Box className={styles.profilePlace}></Box>
+						<Box className={styles.profilePlace}>
+							{profile?.avater ? (
+								<img
+									src={profile?.avater}
+									className="w-full h-full rounded-full"
+								/>
+							) : (
+								<AccountCircleIcon className="w-full h-full" />
+							)}
+						</Box>
 						<Box className="flex flex-col ml-3">
 							<p className="font-semibold text-sm">{profile?.username}</p>
 							<p className="text-sm text-darkGray">{profile?.fullname}</p>
@@ -70,7 +80,16 @@ function RightSideComponent() {
 											query: { id: user._id },
 										}}
 									>
-										<Box className="border-2 w-10 h-10 rounded-full"></Box>
+										<Box className="w-10 h-10 rounded-full">
+											{user?.avater ? (
+												<img
+													src={user?.avater}
+													className="w-full h-full rounded-full"
+												/>
+											) : (
+												<AccountCircleIcon className="w-full h-full" />
+											)}
+										</Box>
 									</Link>
 									<Box className="h-full flex flex-col ml-3 justify-center">
 										<p className="text-xs font-bold">{user?.fullname}</p>

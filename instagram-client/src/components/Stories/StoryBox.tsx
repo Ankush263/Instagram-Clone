@@ -48,10 +48,10 @@ function StoryBox(props: any) {
 			reader.onload = (e: ProgressEvent<FileReader>) => {
 				if (e.target) {
 					setSelectedImage(e.target.result as string);
+					setUploaded(true);
 				}
 			};
 			reader.readAsDataURL(file);
-			setUploaded(true);
 		}
 	};
 
@@ -78,11 +78,14 @@ function StoryBox(props: any) {
 					<span className={styles.postBtn} onClick={handleUpload}>
 						post
 					</span>
-					<img
-						src={selectedImage}
-						alt="Selected"
-						className="max-w-full max-h-full"
-					/>
+
+					{selectedImage && (
+						<img
+							src={selectedImage}
+							alt="Selected"
+							className="max-w-full max-h-full"
+						/>
+					)}
 				</Box>
 			) : (
 				<Box>

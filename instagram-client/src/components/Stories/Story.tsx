@@ -32,7 +32,6 @@ function Story(props: any) {
 			const token = fetchToken();
 			const story = await getAllStories(token);
 			setAllStories(story.data.data.data);
-			console.log('story: ', story.data.data.data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -57,7 +56,7 @@ function Story(props: any) {
 	}, []);
 
 	const styles = {
-		bar: `w-full h-full flex justify-center items-center `,
+		bar: `w-full h-full flex justify-center items-center`,
 		component: `w-full h-full flex justify-start items-start space-x-6 overflow-x-scroll scroll whitespace-nowrap scroll-smooth no-scrollbar`,
 		storyBox: `flex flex-col justify-center items-center cursor-pointer`,
 		round: `rounded-full w-16 h-16 bg-white`,

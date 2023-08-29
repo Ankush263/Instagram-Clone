@@ -3,6 +3,8 @@ const factory = require('./handleFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Post = require('../models/postModel');
+const { uploadImage } = require('./s3bucket');
+const { s3 } = require('./s3');
 
 exports.createUser = (req, res) => {
 	res.status(500).json({
@@ -43,6 +45,66 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 		status: 'success',
 		data: {
 			user: updatedUser,
+		},
+	});
+});
+
+exports.uploadImg = uploadImage.single('avater');
+
+exports.updateAvater = catchAsync(async (req, res, next) => {
+	const key = req.file.key;
+	const url = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${key}`;
+
+	const updatedUser = await User.findByIdAndUpdate(
+		req.user.id,
+		{ ...req.body, avater: url },
+		{
+			new: true,
+			runValidators: true,
+		}
+	);
+
+	res.status(200).json({
+		status: 'success',
+		data: {
+			user: updatedUser,
+		},
+	});
+});
+
+exports.deleteAvater = catchAsync(async (req, res, next) => {
+	const user = await User.findById(req.user.id);
+
+	const parts = user.avater.split(
+		`https://${process.env.BUCKET_NAME}.s3.amazonaws.com/`
+	);
+	const key = parts[1];
+
+	const params = {
+		Bucket: `${process.env.BUCKET_NAME}`,
+		Key: key,
+	};
+	s3.deleteObject(params, (err, data) => {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log(data);
+		}
+	});
+
+	await User.findByIdAndUpdate(
+		req.user.id,
+		{ ...req.body, avater: null },
+		{
+			new: true,
+			runValidators: true,
+		}
+	);
+
+	res.status(200).json({
+		status: 'success',
+		data: {
+			user: null,
 		},
 	});
 });

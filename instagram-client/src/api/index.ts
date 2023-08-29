@@ -36,6 +36,20 @@ export const updateBio = (_token: string, details: { bio: string }) =>
 		headers: { Authorization: `Bearer ${_token}` },
 	});
 
+export const uploadAvater = (_token: string, details: FormData) =>
+	USER_API.patch(`/updateAvater`, details, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});
+
+export const deleteAvater = (_token: string) =>
+	USER_API.patch(
+		`/deleteAvater`,
+		{},
+		{
+			headers: { Authorization: `Bearer ${_token}` },
+		}
+	);
+
 export const createPost = (_token: string, _formData: FormData) =>
 	POST_API.post(`/`, _formData, {
 		headers: { Authorization: `Bearer ${_token}` },
