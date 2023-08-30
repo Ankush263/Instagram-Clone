@@ -73,7 +73,7 @@ function PostComponent(props: any) {
 
 	const fetch = async () => {
 		try {
-			console.log('fetch');
+			console.log('post component fetched...');
 			const token = fetchToken();
 			const res = await getSinglePost(token, props.details.id);
 			console.log(res.data.data.data);

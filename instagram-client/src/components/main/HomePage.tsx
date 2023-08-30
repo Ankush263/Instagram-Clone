@@ -1,18 +1,24 @@
-import { Box } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import Story from '@/components/Stories/Story';
+import { Box, Skeleton } from '@mui/material';
+import React, {
+	useState,
+	useEffect,
+	lazy,
+	Suspense,
+	useCallback,
+	useMemo,
+} from 'react';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import RightSideComponent from '@/components/SideComponents/RightSideComponent';
 import { getAllPosts } from '@/api';
 import { fetchToken } from '../token';
-import CommentOutline from '../icons/CommentOutline';
-import LikeComponent from './LikeComponent';
-import { time } from '@/api/calcTime';
 import PostComponent from '../post/PostComponent';
 import CloseIcon from '@mui/icons-material/Close';
 import Backdrop from '@mui/material/Backdrop';
-import Link from 'next/link';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { PostSkeleton } from '../skeleton/Skeleton';
+
+const Story = lazy(() => import('@/components/Stories/Story'));
+
+const AllPostRender = lazy(() => import('./posts/AllPostRender'));
 
 function HomePage() {
 	const [posts, setPosts] = useState([]);
@@ -25,48 +31,42 @@ function HomePage() {
 		setOpen(false);
 	};
 
-	const fetch = async () => {
+	const fetch = useCallback(async () => {
 		try {
 			const token = fetchToken();
 			const post = await getAllPosts(token);
 			setPosts(post.data.data.data);
+			console.log('fetch the home page....');
 		} catch (error) {
 			console.log(error);
 		}
-	};
-
-	const handleOpenPost = async (id: string, url: string, avater: string) => {
-		try {
-			setOpen(true);
-			setDetails({ id, url, avater });
-			setLoad((prev) => !prev);
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	const handleReload = () => {
-		setReloadComponent((prevState) => !prevState);
-	};
+	}, []);
 
 	useEffect(() => {
+		let isMounted = true;
+
 		setTimeout(() => {
-			fetch();
+			if (isMounted) {
+				fetch();
+			}
 		}, 1000);
+
+		return () => {
+			isMounted = false;
+		};
 	}, [reloadComponent]);
 
-	const styles = {
-		page: `flex justify-center items-center`,
-		leftBar: `h-screen w-2/12 mb-auto fixed left-0 top-0`,
-		main: `w-6/12 flex flex-col justify-start items-center mb-auto ml-[300px]`,
-		rightBar: `h-screen w-4/12 mb-auto`,
-		rightBarHidden: `hidden`,
-		navBar: `w-10/12 h-[95px] ml-auto mt-10 flex justify-between items-center`,
-		scrollBox: `w-full mt-10 flex flex-col justify-center items-center`,
-		postBox: `w-[450px] ml-[100px] mb-20 flex flex-col justify-center items-center`,
-		postAvaterBox: `w-full h-[40px] flex justify-start items-center mb-5`,
-		postMain: `w-full h-[550px] border-2 border-gray flex justify-center items-center`,
-	};
+	const styles = useMemo(() => {
+		return {
+			page: `flex justify-center items-center`,
+			leftBar: `h-screen w-2/12 mb-auto fixed left-0 top-0`,
+			main: `w-6/12 flex flex-col justify-start items-center mb-auto ml-[300px]`,
+			rightBar: `h-screen w-4/12 mb-auto`,
+			navBar: `w-10/12 h-[95px] ml-auto mt-10 flex justify-between items-center`,
+			scrollBox: `w-full mt-10 flex flex-col justify-center items-center`,
+		};
+	}, []);
+
 	return (
 		<Box className={styles.page}>
 			<Box className={styles.leftBar}>
@@ -74,93 +74,42 @@ function HomePage() {
 			</Box>
 			<Box className={styles.main}>
 				<Box className={styles.navBar}>
-					<Story />
+					<Suspense
+						fallback={
+							<Box>
+								<Skeleton
+									variant="circular"
+									width={40}
+									height={40}
+									sx={{ bgcolor: 'grey.900' }}
+								/>
+							</Box>
+						}
+					>
+						<Story />
+					</Suspense>
 				</Box>
 
 				<Box className={styles.scrollBox}>
-					{posts.map((post: any) => {
-						return (
-							<Box className={styles.postBox} key={post._id}>
-								<Box className={styles.postAvaterBox}>
-									<Link
-										href={{
-											pathname: `/main/ProfilePage`,
-											query: { id: post.user._id },
-										}}
-									>
-										<Box className="w-[35px] h-[35px] rounded-full cursor-pointer">
-											{post?.user?.avater ? (
-												<img
-													src={post?.user?.avater}
-													className="w-full h-full rounded-full"
-												/>
-											) : (
-												<AccountCircleIcon className="w-full h-full" />
-											)}
-										</Box>
-									</Link>
-									<Link
-										href={{
-											pathname: `/main/ProfilePage`,
-											query: { id: post.user._id },
-										}}
-									>
-										<p className="text-xs font-bold ml-2 cursor-pointer">
-											{post.user.username}
-										</p>
-									</Link>
-									<span className="w-1 h-1 border-2 border-darkGray rounded-full ml-3"></span>
-									<p className="text-sm text-darkGray ml-1">
-										{time(post.createdAt)}
-									</p>
+					{posts.length > 0 ? (
+						<Suspense
+							fallback={
+								<Box>
+									<PostSkeleton />
 								</Box>
-								<Box className={styles.postMain}>
-									<img
-										src={post.url}
-										className="max-w-full max-h-full"
-										alt="#"
-									/>
-								</Box>
-								<Box className="w-full h-[40px] flex justify-start items-start mt-3">
-									<Box className="cursor-pointer">
-										<LikeComponent _id={post._id} reload={handleReload} />
-									</Box>
-									<Box
-										className="ml-3"
-										onClick={() =>
-											handleOpenPost(post?._id, post?.url, post?.user.avater)
-										}
-									>
-										<CommentOutline />
-									</Box>
-								</Box>
-								<Box className="w-full flex justify-start items-start">
-									<span className="text-sm">
-										{post.likesNum}
-										{` likes`}
-									</span>
-								</Box>
-								<Box className="w-full">
-									<span className="font-semibold text-sm">
-										{post.user.username}
-										{'    '}
-									</span>
-									<span className="text-sm text-left">{post.caption}</span>
-								</Box>
-								<Box className="w-full cursor-pointer">
-									<span
-										className="text-sm text-darkGray"
-										onClick={() =>
-											handleOpenPost(post?._id, post?.url, post?.user?.avater)
-										}
-									>
-										View all comments...
-									</span>
-								</Box>
-								<Box className="w-11/12 border-b-2 mt-5 border-gray"></Box>
-							</Box>
-						);
-					})}
+							}
+						>
+							<AllPostRender
+								posts={posts}
+								setOpen={setOpen}
+								setLoad={setLoad}
+								setDetails={setDetails}
+								setReloadComponent={setReloadComponent}
+							/>
+						</Suspense>
+					) : (
+						<PostSkeleton />
+					)}
 				</Box>
 			</Box>
 			<Backdrop

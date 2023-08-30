@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import NotificationOutline from '../icons/NotificationOutline';
 import LikedIcon from '../icons/LikedIcon';
 import { fetchToken } from '../token';
@@ -28,6 +28,11 @@ function LikeComponent(props: any) {
 		setOpen(false);
 	};
 
+	const likedPostIds = useMemo(
+		() => likedPosts.map((i) => i.post),
+		[likedPosts]
+	);
+
 	const fetch = async () => {
 		try {
 			if (shouldFetchLikedPosts) {
@@ -47,9 +52,11 @@ function LikeComponent(props: any) {
 		try {
 			const token = fetchToken();
 			console.log(postId);
-			await createLikeInPost(postId as string, token);
+			await Promise.all([
+				createLikeInPost(postId as string, token),
+				props.reload(),
+			]);
 			setShouldFetchLikedPosts(true);
-			props.reload();
 			setOpen(false);
 		} catch (error) {
 			console.log(error);
@@ -83,9 +90,19 @@ function LikeComponent(props: any) {
 		}
 	};
 
+	const likeComponent = likedPostIds.includes(props._id) ? (
+		<Box onClick={() => handleDislike(foundLike(props._id))}>
+			<LikedIcon />
+		</Box>
+	) : (
+		<Box onClick={() => handleLike(props._id)}>
+			<NotificationOutline />
+		</Box>
+	);
+
 	useEffect(() => {
 		fetch();
-	}, [shouldFetchLikedPosts, props.reload()]);
+	}, [shouldFetchLikedPosts, props.reload]);
 
 	return (
 		<Box className="w-full h-full">
@@ -96,15 +113,7 @@ function LikeComponent(props: any) {
 			>
 				<CircularProgress color="inherit" />
 			</Backdrop>
-			{likedPosts.map((i: any) => i.post).includes(props._id) ? (
-				<Box onClick={() => handleDislike(foundLike(props._id))}>
-					<LikedIcon />
-				</Box>
-			) : (
-				<Box onClick={() => handleLike(props._id)}>
-					<NotificationOutline />
-				</Box>
-			)}
+			{likeComponent}
 		</Box>
 	);
 }

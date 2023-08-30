@@ -1,12 +1,13 @@
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import { Box } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { getIdAndPhotoOfPosts } from '@/api';
 import { fetchToken } from '@/components/token';
 import PostComponent from '@/components/post/PostComponent';
 import Backdrop from '@mui/material/Backdrop';
 import CloseIcon from '@mui/icons-material/Close';
 import Masonry from 'react-masonry-css';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ExplorePage() {
 	const [images, setImages] = useState<any>([]);
@@ -18,8 +19,9 @@ function ExplorePage() {
 		setOpen(false);
 	};
 
-	const fetch = async () => {
+	const fetchImgs = useCallback(async () => {
 		try {
+			console.log('explorer page....');
 			const token = fetchToken();
 			const res = await getIdAndPhotoOfPosts(token);
 			const imgs = res.data.data.data;
@@ -28,7 +30,7 @@ function ExplorePage() {
 		} catch (error) {
 			console.log(error);
 		}
-	};
+	}, []);
 
 	const handleClick = async (url: string, id: string) => {
 		try {
@@ -49,35 +51,58 @@ function ExplorePage() {
 	};
 
 	useEffect(() => {
-		fetch();
-	}, []);
+		console.log('useEffect...');
+		let isMounted = true;
+		if (isMounted) {
+			fetchImgs();
+		}
+		return () => {
+			isMounted = false;
+		};
+	}, [fetchImgs]);
 
 	const styles = {
 		page: `flex justify-center items-start`,
 		leftBar: `h-screen w-2/12 mb-auto fixed left-0 top-0`,
+		coverBox: `w-8/12 ml-auto mr-40 flex justify-center items-center`,
 	};
 	return (
 		<Box className={styles.page}>
 			<Box className={styles.leftBar}>
 				<LeftSideComponent />
 			</Box>
-			<Box className="w-8/12 ml-auto mr-40 flex justify-center items-center">
-				<Masonry
-					breakpointCols={breakpoints}
-					className="my-masonry-grid"
-					columnClassName="my-masonry-grid_column"
-				>
-					{images.map((item: any) => (
-						<div key={item._id} className="my-masonry-grid_item">
-							<img
-								src={item.url}
-								alt="#"
-								className="max-w-full max-h-full cursor-pointer"
-								onClick={() => handleClick(item.url, item._id)}
-							/>
-						</div>
-					))}
-				</Masonry>
+			<Box className={styles.coverBox}>
+				{images.length > 0 ? (
+					<Suspense
+						fallback={
+							<Box>
+								<CircularProgress />
+							</Box>
+						}
+					>
+						<Masonry
+							breakpointCols={breakpoints}
+							className="my-masonry-grid"
+							columnClassName="my-masonry-grid_column"
+						>
+							{images.map((item: any) => (
+								<div key={item._id} className="my-masonry-grid_item">
+									<img
+										src={item.url}
+										alt="#"
+										className="max-w-full max-h-full cursor-pointer"
+										onClick={() => handleClick(item.url, item._id)}
+										loading="lazy"
+									/>
+								</div>
+							))}
+						</Masonry>
+					</Suspense>
+				) : (
+					<Box className="w-full h-96 flex justify-center items-center">
+						<CircularProgress />
+					</Box>
+				)}
 				<Backdrop
 					sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 					open={open}
