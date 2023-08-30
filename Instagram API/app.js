@@ -14,6 +14,7 @@ const likesRouter = require('./routes/likeRoutes');
 const postLikesRouter = require('./routes/postLikeRoutes');
 const storyRouter = require('./routes/storyRoutes');
 const reelRouter = require('./routes/reelRoutes');
+const searchRouter = require('./routes/searchRoutes');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/v1/likes', likesRouter);
 app.use('/api/v1/postLikes', postLikesRouter);
 app.use('/api/v1/story', storyRouter);
 app.use('/api/v1/reel', reelRouter);
+app.use('/api/v1/search', searchRouter);
 
 app.all('*', (req, res, next) => {
 	next(new AppError(`Can't find ${req.originalUrl} on this server!!`, 404));

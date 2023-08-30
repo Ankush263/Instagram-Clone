@@ -22,6 +22,7 @@ import StoryBox from '@/components/Stories/StoryBox';
 import StatusComponent from '@/components/status/StatusComponent';
 import CircularProgress from '@mui/material/CircularProgress';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import FollowBtnComponent from '@/components/profile/FollowBtnComponent';
 
 function ProfilePage() {
 	const router = useRouter();
@@ -43,6 +44,9 @@ function ProfilePage() {
 	const [avater, setAvater] = useState<any>('');
 	const [avaterImg, setAvaterImg] = useState<any>('');
 	const [upload, setUpload] = useState(false);
+	const [myProfile, setMyProfile] = useState(false);
+	const [follow, setFollow] = useState(false);
+	const [followId, setFollowId] = useState('');
 
 	const handleClose = () => {
 		setOpen(false);
@@ -87,21 +91,41 @@ function ProfilePage() {
 		try {
 			const token = fetchToken();
 			let res: AxiosResponse;
+			let story;
+			const me = await getMe(token);
+
 			if (Object.keys(data).length === 0) {
-				res = await getMe(token);
+				res = me;
+				story = await getMyStory(token);
+				setMyProfile(true);
 			} else {
 				res = await getSingleUser(token, data.id as string);
+				story = await getStoriesByUser(token, data.id as string);
+				setMyProfile(false);
 			}
 			if (res.data) {
 				setSelf(res?.data.data.data);
 			}
-			let story;
-			if (Object.keys(data).length === 0) {
-				story = await getMyStory(token);
-			} else {
-				story = await getStoriesByUser(token, data.id as string);
+
+			for (let i = 0; i < me.data.data.data.followings.length; i++) {
+				if (me.data.data.data.followings[i].to.id === data.id) {
+					setFollow(true);
+					setFollowId(me.data.data.data.followings[i].id);
+					break;
+				} else {
+					setFollow(false);
+				}
 			}
+
+			// if (following) {
+			// 	setFollow(true);
+			// 	console.log('following: ', following);
+			// 	setFollowId(following.id);
+			// } else {
+			// 	setFollow(false);
+			// }
 			console.log('self: ', res.data.data.data);
+			console.log('me: ', me.data.data.data);
 			setStories(story.data.data.data);
 		} catch (error) {
 			console.log(error);
@@ -217,127 +241,143 @@ function ProfilePage() {
 							</Box>
 						</Box>
 						<Box className={styles.topRight}>
-							<Box className="w-10/12 h-12 flex justify-start items-center">
-								<p className="text-xl mr-5">{self?.username}</p>
-								<button className={styles.btn} onClick={handleEdit}>
-									Edit bio
-								</button>
+							{myProfile ? (
+								<Box className="w-10/12 h-12 flex justify-start items-center">
+									<p className="text-xl mr-5">{self?.username}</p>
+									<button className={styles.btn} onClick={handleEdit}>
+										Edit bio
+									</button>
 
-								{/* Edit Bio backdrop */}
+									{/* Edit Bio backdrop */}
 
-								<Backdrop
-									sx={{
-										color: '#fff',
-										zIndex: (theme) => theme.zIndex.drawer + 1,
-									}}
-									open={openEditProfile}
-								>
-									<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
-										<span className="mr-auto ml-7 mb-5">Bio:</span>
-										<Box
-											className="absolute top-4 right-4 cursor-pointer"
-											onClick={handleCloseEditBio}
-										>
-											<CloseIcon fontSize="large" />
+									<Backdrop
+										sx={{
+											color: '#fff',
+											zIndex: (theme) => theme.zIndex.drawer + 1,
+										}}
+										open={openEditProfile}
+									>
+										<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
+											<span className="mr-auto ml-7 mb-5">Bio:</span>
+											<Box
+												className="absolute top-4 right-4 cursor-pointer"
+												onClick={handleCloseEditBio}
+											>
+												<CloseIcon fontSize="large" />
+											</Box>
+											<textarea
+												className="mb-4 font-xs text-black"
+												value={bio}
+												onChange={(e) => setBio(e.target.value)}
+											/>
+											<button
+												className="w-20 h-8 rounded-md bg-skyBlue"
+												onClick={handleUpdateBio}
+											>
+												update
+											</button>
 										</Box>
-										<textarea
-											className="mb-4 font-xs text-black"
-											value={bio}
-											onChange={(e) => setBio(e.target.value)}
-										/>
-										<button
-											className="w-20 h-8 rounded-md bg-skyBlue"
-											onClick={handleUpdateBio}
-										>
-											update
-										</button>
-									</Box>
-								</Backdrop>
+									</Backdrop>
 
-								{/* ------------------- */}
+									{/* ------------------- */}
 
-								<Backdrop
-									sx={{
-										color: '#fff',
-										zIndex: (theme) => theme.zIndex.drawer + 1,
-									}}
-									open={openAvaterUpload}
-								>
-									<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
-										<Box
-											className="absolute top-4 right-4 cursor-pointer"
-											onClick={handleCloseEditBio}
-										>
-											<CloseIcon fontSize="large" />
-										</Box>
-										<Box className="w-[100px] h-[100px] rounded-full mb-4">
-											{avater && (
-												<img
-													src={avater}
-													alt="Avatar"
-													className="w-full h-full rounded-full bg-darkGray"
-												/>
+									<Backdrop
+										sx={{
+											color: '#fff',
+											zIndex: (theme) => theme.zIndex.drawer + 1,
+										}}
+										open={openAvaterUpload}
+									>
+										<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
+											<Box
+												className="absolute top-4 right-4 cursor-pointer"
+												onClick={handleCloseEditBio}
+											>
+												<CloseIcon fontSize="large" />
+											</Box>
+											<Box className="w-[100px] h-[100px] rounded-full mb-4">
+												{avater && (
+													<img
+														src={avater}
+														alt="Avatar"
+														className="w-full h-full rounded-full bg-darkGray"
+													/>
+												)}
+											</Box>
+											{upload ? (
+												<button
+													className={styles.btn}
+													onClick={uploadProfilePic}
+												>
+													upload
+												</button>
+											) : (
+												<Box>
+													<input
+														type="file"
+														id="actual-btn"
+														hidden
+														onChange={handleChangeAvater}
+													/>
+													<label
+														htmlFor="actual-btn"
+														className="px-2 h-8 rounded-md bg-skyBlue flex justify-center items-center"
+													>
+														update profile pic
+													</label>
+												</Box>
 											)}
 										</Box>
-										{upload ? (
-											<button className={styles.btn} onClick={uploadProfilePic}>
-												upload
-											</button>
-										) : (
-											<Box>
-												<input
-													type="file"
-													id="actual-btn"
-													hidden
-													onChange={handleChangeAvater}
-												/>
-												<label
-													htmlFor="actual-btn"
-													className="px-2 h-8 rounded-md bg-skyBlue flex justify-center items-center"
-												>
-													update profile pic
-												</label>
-											</Box>
-										)}
+									</Backdrop>
+
+									{/* Loading backdrop */}
+
+									<Backdrop
+										sx={{
+											color: '#fff',
+											zIndex: (theme) => theme.zIndex.drawer + 1,
+										}}
+										open={openLoad}
+										onClick={() => setOpenLoad(false)}
+									>
+										<CircularProgress color="inherit" />
+									</Backdrop>
+
+									{/* ------------------- */}
+
+									{!self?.avater ? (
+										<button
+											className={styles.btn}
+											onClick={() => setOpenAvaterUpload(true)}
+										>
+											Upload photo
+										</button>
+									) : (
+										<button
+											className={styles.btn2}
+											// onClick={() => setOpenAvaterUpload(true)}
+											onClick={handleDeleteProfilePic}
+										>
+											Delete photo
+										</button>
+									)}
+
+									<Box className="ml-10">
+										<SettingsIcon />
 									</Box>
-								</Backdrop>
-
-								{/* Loading backdrop */}
-
-								<Backdrop
-									sx={{
-										color: '#fff',
-										zIndex: (theme) => theme.zIndex.drawer + 1,
-									}}
-									open={openLoad}
-									onClick={() => setOpenLoad(false)}
-								>
-									<CircularProgress color="inherit" />
-								</Backdrop>
-
-								{/* ------------------- */}
-
-								{!self?.avater ? (
-									<button
-										className={styles.btn}
-										onClick={() => setOpenAvaterUpload(true)}
-									>
-										Upload photo
-									</button>
-								) : (
-									<button
-										className={styles.btn2}
-										// onClick={() => setOpenAvaterUpload(true)}
-										onClick={handleDeleteProfilePic}
-									>
-										Delete photo
-									</button>
-								)}
-
-								<Box className="ml-10">
-									<SettingsIcon />
 								</Box>
-							</Box>
+							) : (
+								<Box className="w-6/12 h-12 flex justify-start items-center">
+									<FollowBtnComponent
+										name={self?.username}
+										fetch={fetch}
+										follow={follow}
+										id={followId}
+										userId={self?.id}
+									/>
+								</Box>
+							)}
+
 							<Box className={styles.midBox}>
 								<Box className="flex justify-center items-center">
 									<p className="font-semibold">{self?.postNum}</p>

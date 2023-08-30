@@ -41,7 +41,9 @@ exports.createFollow = catchAsync(async (req, res, next) => {
 });
 
 exports.unfollow = catchAsync(async (req, res, next) => {
+	console.log(req.params.id);
 	const follow = await Follow.findById(req.params.id);
+	console.log(follow);
 	if (!follow) {
 		return next(new AppError(`No document found with that Id`, 404));
 	}
