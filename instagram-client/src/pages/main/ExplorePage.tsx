@@ -33,8 +33,6 @@ function ExplorePage() {
 	const handleClick = async (url: string, id: string) => {
 		try {
 			setOpen((prev) => !prev);
-			console.log(url);
-			console.log(id);
 			setDetails({ url, id });
 			setLoad((prev) => !prev);
 		} catch (error) {

@@ -100,7 +100,6 @@ function ImageBoxWithDetails(props: any) {
 
 	const handleRemoveTag = (username: string, x: number, y: number) => {
 		try {
-			console.log('remove: ', username, x, y);
 			const deleteObj = { username, x, y };
 			setTagNum(
 				tagNum.filter(
@@ -277,11 +276,11 @@ function ImageBoxWithDetails(props: any) {
 						{tagNum.map((i: any) => {
 							return (
 								<Chip
+									key={i._id}
 									label={`${i.username}`}
 									variant="outlined"
 									className="text-white"
 									onDelete={() => handleRemoveTag(i.username, i.x, i.y)}
-									onClick={() => console.log(tagNum)}
 								/>
 							);
 						})}

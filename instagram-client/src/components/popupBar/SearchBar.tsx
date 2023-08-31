@@ -21,10 +21,8 @@ function SearchBar() {
 	const fetch = async () => {
 		try {
 			const token = fetchToken();
-			console.log(searchQuery.length);
 			if (searchQuery.length > 0) {
 				const res = await createSearch(token, searchQuery);
-				console.log(res.data.data.data);
 				setQueryResult(res.data.data.data);
 			}
 		} catch (error) {

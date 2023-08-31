@@ -40,7 +40,6 @@ function LikeComponent(props: any) {
 				const self = await getMe(token);
 				setLikedPosts(self.data.data.data.likedPosts);
 				setShouldFetchLikedPosts(false);
-				console.log('reload');
 			}
 		} catch (error) {
 			console.log(error);
@@ -51,7 +50,6 @@ function LikeComponent(props: any) {
 		setOpen(true);
 		try {
 			const token = fetchToken();
-			console.log(postId);
 			await Promise.all([
 				createLikeInPost(postId as string, token),
 				props.reload(),

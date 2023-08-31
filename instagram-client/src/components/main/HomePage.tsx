@@ -36,7 +36,6 @@ function HomePage() {
 			const token = fetchToken();
 			const post = await getAllPosts(token);
 			setPosts(post.data.data.data);
-			console.log('fetch the home page....');
 		} catch (error) {
 			console.log(error);
 		}

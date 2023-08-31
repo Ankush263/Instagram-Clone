@@ -53,7 +53,6 @@ exports.createComment = catchAsync(async (req, res, next) => {
 
 	if (req.body.post) {
 		await client.HDEL(allPostKey(), postKey(req.body.post));
-		console.log('post key deleted...');
 	}
 
 	res.status(201).json({

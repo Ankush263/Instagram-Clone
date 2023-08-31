@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+	Suspense,
+	lazy,
+	useMemo,
+} from 'react';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
 import { Box, Skeleton } from '@mui/material';
 import { getMe, getSingleUser, getMyStory, getStoriesByUser } from '@/api';
@@ -91,7 +98,6 @@ function ProfilePage() {
 					setFollow(false);
 				}
 			}
-			console.log('profile is loading...');
 			setStories(story.data.data.data);
 		} catch (error) {
 			console.log(error);
@@ -116,18 +122,21 @@ function ProfilePage() {
 		};
 	}, [fetch]);
 
-	const styles = {
-		page: `flex justify-center items-center`,
-		leftBar: `h-screen w-2/12 mb-auto fixed left-0 top-0`,
-		main: `w-9/12 pb-5 mb-auto mt-7 border-gray flex flex-col ml-20 `,
-		topMain: `h-4/6 w-full flex justify-between items-center`,
-		topLeft: `h-full w-3/12 flex justify-center items-center`,
-		topRight: `h-full w-8/12 flex flex-col justify-between items-start`,
-		bottomMain: `h-2/6 w-full flex justify-start items-center mt-7`,
-		midBox: `w-full h-10 flex justify-start items-center`,
-		btn: `bg-grayshBlack active:bg-gray w-[100px] h-8 rounded-lg flex justify-center items-center text-sm font-semibold mr-3`,
-		btn2: `bg-red active:bg-gray w-[100px] h-8 rounded-lg flex justify-center items-center text-sm font-semibold mr-3`,
-	};
+	const styles = useMemo(() => {
+		return {
+			page: `flex justify-center items-center`,
+			leftBar: `h-screen w-2/12 mb-auto fixed left-0 top-0`,
+			main: `w-9/12 pb-5 mb-auto mt-7 border-gray flex flex-col ml-20 `,
+			topMain: `h-4/6 w-full flex justify-between items-center`,
+			topLeft: `h-full w-3/12 flex justify-center items-center`,
+			topRight: `h-full w-8/12 flex flex-col justify-between items-start`,
+			bottomMain: `h-2/6 w-full flex justify-start items-center mt-7`,
+			midBox: `w-full h-10 flex justify-start items-center`,
+			btn: `bg-grayshBlack active:bg-gray w-[100px] h-8 rounded-lg flex justify-center items-center text-sm font-semibold mr-3`,
+			btn2: `bg-red active:bg-gray w-[100px] h-8 rounded-lg flex justify-center items-center text-sm font-semibold mr-3`,
+		};
+	}, []);
+
 	return (
 		<Box className={styles.page}>
 			<Box className={styles.leftBar}>

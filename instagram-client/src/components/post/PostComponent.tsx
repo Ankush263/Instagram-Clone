@@ -48,7 +48,6 @@ function PostComponent(props: any) {
 				post: id,
 				contents: comment,
 			});
-			console.log(res.data.data.data);
 			setComment('');
 			fetch();
 			setOpen(false);
@@ -75,10 +74,8 @@ function PostComponent(props: any) {
 
 	const fetch = async () => {
 		try {
-			console.log('post component fetched...');
 			const token = fetchToken();
 			const res = await getSinglePost(token, props.details.id);
-			console.log(res.data.data.data);
 			setPost(res.data.data.data);
 		} catch (error) {
 			console.log(error);

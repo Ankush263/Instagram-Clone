@@ -30,7 +30,6 @@ function Story() {
 
 	const fetch = useCallback(async () => {
 		try {
-			console.log('story is loading...');
 			const token = fetchToken();
 			const story = await getAllStories(token);
 			setAllStories(story.data.data.data);
@@ -85,14 +84,14 @@ function Story() {
 				{allStories.length > 0 ? (
 					allStories.map((story: any) => {
 						return (
-							<Box className={styles.storyBox}>
+							<Box className={styles.storyBox} key={story._id}>
 								<Box
 									className={styles.ring}
 									sx={{ width: '73px', height: '73px' }}
 								>
 									<Box className={styles.round}>
 										<img
-											src={story.url}
+											src={story?.url}
 											className="w-full h-full rounded-full"
 											onClick={() => handleStatusOpen(story?.url)}
 											loading="lazy"

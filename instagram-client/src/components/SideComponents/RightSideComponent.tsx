@@ -20,7 +20,6 @@ function RightSideComponent() {
 
 	const fetch = useCallback(async () => {
 		try {
-			console.log('right side component...', Object.keys(profile).length);
 			const token = fetchToken();
 			const res = await getAllUsers(token);
 			const self = await getMe(token);

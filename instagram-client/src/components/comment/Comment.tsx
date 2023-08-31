@@ -19,7 +19,7 @@ function Comment(props: any) {
 		component: `w-full flex items-center`,
 	};
 	return (
-		<Box className={styles.component} onClick={() => console.log(props)}>
+		<Box className={styles.component}>
 			<Box className="flex justify-center items-center">
 				<Box className="w-8 h-8 rounded-full">
 					{props.avater ? (

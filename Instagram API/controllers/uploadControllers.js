@@ -14,8 +14,6 @@ const s3 = new AWS.S3({
 exports.uploadImage = catchAsync(async (req, res, next) => {
 	const key = `${req.user.id}/${uuid()}.jpeg`;
 
-	console.log(req.body);
-
 	s3.getSignedUrl(
 		'putObject',
 		{
