@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const URL = `http://localhost:5000`;
+// const URL = `http://localhost:5000`;
+const URL = `https://instagram-clone263.onrender.com`;
 
 const USER_URL = `${URL}/api/v1/user`;
 const POST_URL = `${URL}/api/v1/post`;
