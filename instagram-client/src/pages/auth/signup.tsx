@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import SignupComponent from '@/auth/SignupComponent';
+import Link from 'next/link';
 
 function signup() {
 	const styles = {
@@ -41,7 +42,9 @@ function signup() {
 				</Box>
 				<Box className={styles.darkBlueBtnBox}>
 					<img src="/image/facebook-white.png" className="w-7 mr-1" alt="#" />
-					<p className="text-white font-semibold">Log in with Facebook</p>
+					<Link href={`/auth/login`}>
+						<p className="text-white font-semibold">Log in with Facebook</p>
+					</Link>
 				</Box>
 				<Box className="w-9/12 mt-5 mb-5 flex justify-between items-center">
 					<Box className="border-b-2 border-black w-4/12 text-lightGray"></Box>

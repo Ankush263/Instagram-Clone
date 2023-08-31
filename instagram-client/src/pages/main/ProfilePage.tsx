@@ -153,7 +153,7 @@ function ProfilePage() {
 					<Box className={styles.topMain}>
 						<Box className={styles.topLeft}>
 							<Box className="w-[150px] h-[150px] rounded-full">
-								{!myProfile ? (
+								{Object.keys(self).length === 0 ? (
 									<Skeleton
 										variant="circular"
 										width={160}
@@ -171,7 +171,7 @@ function ProfilePage() {
 							</Box>
 						</Box>
 						<Box className={styles.topRight}>
-							{myProfile ? (
+							{Object.keys(self).length > 0 ? (
 								<Suspense
 									fallback={
 										<Box>
@@ -201,7 +201,7 @@ function ProfilePage() {
 								</Box>
 							)}
 
-							{myProfile ? (
+							{Object.keys(self).length > 0 ? (
 								<Box className={styles.midBox}>
 									<Box className="flex justify-center items-center">
 										<p className="font-semibold">{self?.postNum}</p>
@@ -227,7 +227,7 @@ function ProfilePage() {
 								/>
 							)}
 
-							{myProfile ? (
+							{Object.keys(self).length > 0 ? (
 								<Box className="w-full mb-auto">
 									<p className="font-semibold text-sm">{self?.fullname}</p>
 									<Box className="flex flex-col text-sm">
