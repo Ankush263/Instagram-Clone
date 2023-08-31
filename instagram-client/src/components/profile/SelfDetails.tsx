@@ -2,7 +2,7 @@ import { Backdrop, Box, CircularProgress } from '@mui/material';
 import React, { useState, ChangeEvent } from 'react';
 import { fetchToken } from '../token';
 import { updateBio, uploadAvater, deleteAvater } from '@/api';
-import SettingsIcon from '@/components/icons/SettingsIcon';
+import SettingsIcon from 'public/icons/SettingsIcon';
 import CloseIcon from '@mui/icons-material/Close';
 import { GetStaticProps } from 'next';
 

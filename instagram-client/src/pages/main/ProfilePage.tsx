@@ -15,7 +15,7 @@ import PostComponent from '@/components/post/PostComponent';
 import CloseIcon from '@mui/icons-material/Close';
 import { useRouter } from 'next/router';
 import { AxiosResponse } from 'axios';
-import Add from '@/components/icons/Add';
+import Add from 'public/icons/Add';
 import StoryBox from '@/components/Stories/StoryBox';
 import StatusComponent from '@/components/status/StatusComponent';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';

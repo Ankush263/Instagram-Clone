@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import CommentOutline from '../../icons/CommentOutline';
+import CommentOutline from 'public/icons/CommentOutline';
 import LikeComponent from '../LikeComponent';
 import { time } from '@/api/calcTime';
 import Link from 'next/link';

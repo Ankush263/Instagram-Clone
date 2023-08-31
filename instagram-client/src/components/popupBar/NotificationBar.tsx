@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import NotificationOutline from '../icons/NotificationOutline';
-import NotificationFilled from '../icons/NotificationFilled';
+import NotificationOutline from 'public/icons/NotificationOutline';
+import NotificationFilled from 'public/icons/NotificationFilled';
 
 function NotificationBar() {
 	const [trigger, setTrigger] = useState(false);

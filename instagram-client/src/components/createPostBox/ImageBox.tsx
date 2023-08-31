@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React, { useState, ChangeEvent } from 'react';
 import { RxCross1 } from 'react-icons/rx';
-import PhotoAndVideoIcon from '../icons/PhotoAndVideoIcon';
+import PhotoAndVideoIcon from 'public/icons/PhotoAndVideoIcon';
 import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
 import { GetStaticProps } from 'next';
 

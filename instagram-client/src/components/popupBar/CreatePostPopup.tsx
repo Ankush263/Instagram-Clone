@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import CreateFilled from '../icons/CreateFilled';
-import CreateOutline from '../icons/CreateOutline';
+import CreateFilled from 'public/icons/CreateFilled';
+import CreateOutline from 'public/icons/CreateOutline';
 import { Box } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import ImageBox from '../createPostBox/ImageBox';

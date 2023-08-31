@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React, { useState, useEffect, useMemo } from 'react';
-import NotificationOutline from '../icons/NotificationOutline';
-import LikedIcon from '../icons/LikedIcon';
+import NotificationOutline from 'public/icons/NotificationOutline';
+import LikedIcon from 'public/icons/LikedIcon';
 import { fetchToken } from '../token';
 import { createLikeInPost, getMe, deleteLikeFromPost } from '@/api';
 import Backdrop from '@mui/material/Backdrop';
