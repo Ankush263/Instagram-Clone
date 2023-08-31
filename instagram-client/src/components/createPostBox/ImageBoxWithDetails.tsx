@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Snackbar } from '@mui/material';
 import React, { useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import KeyboardBackspaceOutlinedIcon from '@mui/icons-material/KeyboardBackspaceOutlined';
@@ -10,6 +10,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
 
 export const getStaticProps: GetStaticProps = async (context) => {
 	return {
@@ -32,6 +33,7 @@ function ImageBoxWithDetails(props: any) {
 		caption: '',
 	});
 	const [open, setOpen] = useState(false);
+	const [openAlert, setOpenAlert] = useState(false);
 	const [tagNum, setTagNum] = useState<any>([]);
 	const [tag, setTag] = useState<any>([]);
 	const [createTag, setCreateTag] = useState<boolean>(true);
@@ -89,6 +91,10 @@ function ImageBoxWithDetails(props: any) {
 		} catch (error) {
 			console.log(error);
 			handleClosed();
+			setOpenAlert(true);
+			setTimeout(() => {
+				window.location.replace(`/`);
+			}, 1500);
 		}
 	};
 
@@ -214,6 +220,15 @@ function ImageBoxWithDetails(props: any) {
 					)}
 				</Box>
 			</Box>
+			<Snackbar
+				open={openAlert}
+				autoHideDuration={4500}
+				className="w-full mt-auto"
+			>
+				<Alert variant="filled" severity="error">
+					{`Your tagged person is not defined`}
+				</Alert>
+			</Snackbar>
 			<Box className={styles.popupBoxMain}>
 				<Box className={styles.boxLeft}>
 					<img

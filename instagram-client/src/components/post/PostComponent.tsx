@@ -103,7 +103,7 @@ function PostComponent(props: any) {
 
 	return (
 		<Box className={styles.component}>
-			<Box className={styles.left} onClick={() => console.log(props)}>
+			<Box className={styles.left}>
 				<img src={props?.details?.url} alt="#" className={styles.topImg} />
 				{post?.tags?.length > 0 && (
 					<Box className={styles.tagBtn}>
