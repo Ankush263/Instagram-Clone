@@ -84,6 +84,9 @@ function ProfilePage() {
 				res = await getSingleUser(token, data.id as string);
 				story = await getStoriesByUser(token, data.id as string);
 				setMyProfile(false);
+				if (data.id === me.data.data.data._id) {
+					setMyProfile(true);
+				}
 			}
 			if (res.data) {
 				setSelf(res?.data.data.data);
@@ -171,7 +174,18 @@ function ProfilePage() {
 							</Box>
 						</Box>
 						<Box className={styles.topRight}>
-							{Object.keys(self).length > 0 ? (
+							{/* {myProfile && (
+								<Suspense
+									fallback={
+										<Box>
+											<Details />
+										</Box>
+									}
+								>
+									<SelfDetails fetch={fetch} self={self} />
+								</Suspense>
+							)} */}
+							{myProfile ? (
 								<Suspense
 									fallback={
 										<Box>
