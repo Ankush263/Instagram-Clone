@@ -1,16 +1,7 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import LeftSideComponent from '@/components/SideComponents/LeftSideComponent';
-import { Box } from '@mui/material';
-import SettingsIcon from '@/components/icons/SettingsIcon';
-import {
-	getMe,
-	getSingleUser,
-	getMyStory,
-	getStoriesByUser,
-	updateBio,
-	uploadAvater,
-	deleteAvater,
-} from '@/api';
+import { Box, Skeleton } from '@mui/material';
+import { getMe, getSingleUser, getMyStory, getStoriesByUser } from '@/api';
 import { fetchToken } from '@/components/token';
 import Backdrop from '@mui/material/Backdrop';
 import PostComponent from '@/components/post/PostComponent';
@@ -20,9 +11,12 @@ import { AxiosResponse } from 'axios';
 import Add from '@/components/icons/Add';
 import StoryBox from '@/components/Stories/StoryBox';
 import StatusComponent from '@/components/status/StatusComponent';
-import CircularProgress from '@mui/material/CircularProgress';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import FollowBtnComponent from '@/components/profile/FollowBtnComponent';
+import { MyAllPosts, Details } from '@/components/skeleton/Skeleton';
+import SelfDetails from '@/components/profile/SelfDetails';
+
+const MyPosts = lazy(() => import('@/components/profile/MyPosts'));
 
 function ProfilePage() {
 	const router = useRouter();
@@ -37,13 +31,6 @@ function ProfilePage() {
 	const [statusUrl, setStatusUrl] = useState('');
 	const [statusId, setStatusId] = useState('');
 	const [progress, setProgress] = useState(0);
-	const [openEditProfile, setOpeEditProfile] = useState(false);
-	const [openLoad, setOpenLoad] = useState(false);
-	const [bio, setBio] = useState('');
-	const [openAvaterUpload, setOpenAvaterUpload] = useState(false);
-	const [avater, setAvater] = useState<any>('');
-	const [avaterImg, setAvaterImg] = useState<any>('');
-	const [upload, setUpload] = useState(false);
 	const [myProfile, setMyProfile] = useState(false);
 	const [follow, setFollow] = useState(false);
 	const [followId, setFollowId] = useState('');
@@ -75,19 +62,7 @@ function ProfilePage() {
 		setLoad((prev) => !prev);
 	};
 
-	const handleEdit = async () => {
-		setOpeEditProfile(true);
-	};
-
-	const handleCloseEditBio = () => {
-		setOpeEditProfile(false);
-		setOpenLoad(false);
-		setOpenAvaterUpload(false);
-		setAvater('');
-		setUpload(false);
-	};
-
-	const fetch = async () => {
+	const fetch = useCallback(async () => {
 		try {
 			const token = fetchToken();
 			let res: AxiosResponse;
@@ -116,79 +91,12 @@ function ProfilePage() {
 					setFollow(false);
 				}
 			}
-
-			// if (following) {
-			// 	setFollow(true);
-			// 	console.log('following: ', following);
-			// 	setFollowId(following.id);
-			// } else {
-			// 	setFollow(false);
-			// }
-			console.log('self: ', res.data.data.data);
-			console.log('me: ', me.data.data.data);
+			console.log('profile is loading...');
 			setStories(story.data.data.data);
 		} catch (error) {
 			console.log(error);
 		}
-	};
-
-	const handleUpdateBio = async () => {
-		setOpenLoad(true);
-		try {
-			const token = fetchToken();
-			await updateBio(token, { bio });
-			setOpeEditProfile(false);
-			setBio('');
-			fetch();
-			setOpenLoad(false);
-		} catch (error) {
-			console.log(error);
-			setOpenLoad(false);
-		}
-	};
-
-	const handleDeleteProfilePic = async () => {
-		setOpenLoad(true);
-		try {
-			const token = fetchToken();
-			await deleteAvater(token);
-			fetch();
-			setOpenLoad(false);
-		} catch (error) {
-			console.log(error);
-			setOpenLoad(false);
-		}
-	};
-
-	const handleChangeAvater = async (e: ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files && e.target.files[0];
-		setAvaterImg(file);
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (e: ProgressEvent<FileReader>) => {
-				if (e.target) {
-					setAvater(e.target.result as string);
-					setUpload(true);
-				}
-			};
-			reader.readAsDataURL(file);
-		}
-	};
-
-	const uploadProfilePic = async () => {
-		setOpenLoad(true);
-		try {
-			const token = fetchToken();
-			const formData = new FormData();
-			formData.append('avater', avaterImg);
-			await uploadAvater(token, formData);
-			fetch();
-			setOpenLoad(false);
-		} catch (error) {
-			console.log(error);
-			setOpenLoad(false);
-		}
-	};
+	}, []);
 
 	const handleOpenStory = async () => {
 		try {
@@ -199,8 +107,14 @@ function ProfilePage() {
 	};
 
 	useEffect(() => {
-		fetch();
-	}, []);
+		let isMounted = true;
+		if (isMounted) {
+			fetch();
+		}
+		return () => {
+			isMounted = false;
+		};
+	}, [fetch]);
 
 	const styles = {
 		page: `flex justify-center items-center`,
@@ -223,14 +137,21 @@ function ProfilePage() {
 				sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 				open={openStory}
 			>
-				<StoryBox handleClose={handleClose} />
+				<StoryBox handleClose={handleClose} fetch={fetch} />
 			</Backdrop>
 			<Box className="w-10/12 flex justify-center items-center ml-auto">
 				<Box className={styles.main}>
 					<Box className={styles.topMain}>
 						<Box className={styles.topLeft}>
 							<Box className="w-[150px] h-[150px] rounded-full">
-								{self?.avater ? (
+								{!myProfile ? (
+									<Skeleton
+										variant="circular"
+										width={160}
+										height={160}
+										sx={{ bgcolor: 'grey.900' }}
+									/>
+								) : self?.avater ? (
 									<img
 										src={self?.avater}
 										className="w-full h-full rounded-full"
@@ -242,162 +163,88 @@ function ProfilePage() {
 						</Box>
 						<Box className={styles.topRight}>
 							{myProfile ? (
-								<Box className="w-10/12 h-12 flex justify-start items-center">
-									<p className="text-xl mr-5">{self?.username}</p>
-									<button className={styles.btn} onClick={handleEdit}>
-										Edit bio
-									</button>
-
-									{/* Edit Bio backdrop */}
-
-									<Backdrop
-										sx={{
-											color: '#fff',
-											zIndex: (theme) => theme.zIndex.drawer + 1,
-										}}
-										open={openEditProfile}
-									>
-										<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
-											<span className="mr-auto ml-7 mb-5">Bio:</span>
-											<Box
-												className="absolute top-4 right-4 cursor-pointer"
-												onClick={handleCloseEditBio}
-											>
-												<CloseIcon fontSize="large" />
-											</Box>
-											<textarea
-												className="mb-4 font-xs text-black"
-												value={bio}
-												onChange={(e) => setBio(e.target.value)}
-											/>
-											<button
-												className="w-20 h-8 rounded-md bg-skyBlue"
-												onClick={handleUpdateBio}
-											>
-												update
-											</button>
+								<Suspense
+									fallback={
+										<Box>
+											<Details />
 										</Box>
-									</Backdrop>
-
-									{/* ------------------- */}
-
-									<Backdrop
-										sx={{
-											color: '#fff',
-											zIndex: (theme) => theme.zIndex.drawer + 1,
-										}}
-										open={openAvaterUpload}
-									>
-										<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
-											<Box
-												className="absolute top-4 right-4 cursor-pointer"
-												onClick={handleCloseEditBio}
-											>
-												<CloseIcon fontSize="large" />
-											</Box>
-											<Box className="w-[100px] h-[100px] rounded-full mb-4">
-												{avater && (
-													<img
-														src={avater}
-														alt="Avatar"
-														className="w-full h-full rounded-full bg-darkGray"
-													/>
-												)}
-											</Box>
-											{upload ? (
-												<button
-													className={styles.btn}
-													onClick={uploadProfilePic}
-												>
-													upload
-												</button>
-											) : (
-												<Box>
-													<input
-														type="file"
-														id="actual-btn"
-														hidden
-														onChange={handleChangeAvater}
-													/>
-													<label
-														htmlFor="actual-btn"
-														className="px-2 h-8 rounded-md bg-skyBlue flex justify-center items-center"
-													>
-														update profile pic
-													</label>
-												</Box>
-											)}
-										</Box>
-									</Backdrop>
-
-									{/* Loading backdrop */}
-
-									<Backdrop
-										sx={{
-											color: '#fff',
-											zIndex: (theme) => theme.zIndex.drawer + 1,
-										}}
-										open={openLoad}
-										onClick={() => setOpenLoad(false)}
-									>
-										<CircularProgress color="inherit" />
-									</Backdrop>
-
-									{/* ------------------- */}
-
-									{!self?.avater ? (
-										<button
-											className={styles.btn}
-											onClick={() => setOpenAvaterUpload(true)}
-										>
-											Upload photo
-										</button>
-									) : (
-										<button
-											className={styles.btn2}
-											// onClick={() => setOpenAvaterUpload(true)}
-											onClick={handleDeleteProfilePic}
-										>
-											Delete photo
-										</button>
-									)}
-
-									<Box className="ml-10">
-										<SettingsIcon />
-									</Box>
-								</Box>
+									}
+								>
+									<SelfDetails fetch={fetch} self={self} />
+								</Suspense>
 							) : (
 								<Box className="w-6/12 h-12 flex justify-start items-center">
-									<FollowBtnComponent
-										name={self?.username}
-										fetch={fetch}
-										follow={follow}
-										id={followId}
-										userId={self?.id}
-									/>
+									<Suspense
+										fallback={
+											<Box>
+												<Details />
+											</Box>
+										}
+									>
+										<FollowBtnComponent
+											name={self?.username}
+											fetch={fetch}
+											follow={follow}
+											id={followId}
+											userId={self?.id}
+										/>
+									</Suspense>
 								</Box>
 							)}
 
-							<Box className={styles.midBox}>
-								<Box className="flex justify-center items-center">
-									<p className="font-semibold">{self?.postNum}</p>
-									<p className="ml-1 text-sm">posts</p>
+							{myProfile ? (
+								<Box className={styles.midBox}>
+									<Box className="flex justify-center items-center">
+										<p className="font-semibold">{self?.postNum}</p>
+										<p className="ml-1 text-sm">posts</p>
+									</Box>
+									<Box className="flex ml-12 justify-center items-center">
+										<p className="font-semibold">{self?.followersNum}</p>
+										<p className="ml-1 text-sm">followers</p>
+									</Box>
+									<Box className="flex ml-12 justify-center items-center">
+										<p className="font-semibold">{self?.followingNum}</p>
+										<p className="ml-1 text-sm">followings</p>
+									</Box>
 								</Box>
-								<Box className="flex ml-12 justify-center items-center">
-									<p className="font-semibold">{self?.followersNum}</p>
-									<p className="ml-1 text-sm">followers</p>
+							) : (
+								<Skeleton
+									variant="text"
+									sx={{
+										fontSize: '1rem',
+										bgcolor: 'grey.900',
+										width: '350px',
+									}}
+								/>
+							)}
+
+							{myProfile ? (
+								<Box className="w-full mb-auto">
+									<p className="font-semibold text-sm">{self?.fullname}</p>
+									<Box className="flex flex-col text-sm">
+										<span>{self?.bio}</span>
+									</Box>
 								</Box>
-								<Box className="flex ml-12 justify-center items-center">
-									<p className="font-semibold">{self?.followingNum}</p>
-									<p className="ml-1 text-sm">followings</p>
+							) : (
+								<Box className="flex flex-col">
+									<Skeleton
+										variant="text"
+										sx={{
+											fontSize: '1rem',
+											bgcolor: 'grey.900',
+											width: '150px',
+										}}
+									/>
+									<Skeleton
+										variant="text"
+										sx={{
+											fontSize: '1rem',
+											bgcolor: 'grey.900',
+											width: '150px',
+										}}
+									/>
 								</Box>
-							</Box>
-							<Box className="w-full mb-auto">
-								<p className="font-semibold text-sm">{self?.fullname}</p>
-								<Box className="flex flex-col text-sm">
-									<span>{self?.bio}</span>
-								</Box>
-							</Box>
+							)}
 						</Box>
 					</Box>
 					<Box className={styles.bottomMain}>
@@ -442,19 +289,16 @@ function ProfilePage() {
 					</Box>
 
 					<Box className="border-b-2 w-full mt-10 border-gray"></Box>
-					<Box className="w-full mt-10 grid grid-cols-3 gap-1">
-						{self?.posts?.map((post: any) => {
-							return (
-								<Box
-									className="cursor-pointer"
-									key={post._id}
-									onClick={() => handleClick(post.url, post._id)}
-								>
-									<img src={post.url} className="w-full h-full" alt="#" />
-								</Box>
-							);
-						})}
-					</Box>
+
+					<Suspense
+						fallback={
+							<Box>
+								<MyAllPosts />
+							</Box>
+						}
+					>
+						<MyPosts self={self} handleClick={handleClick} />
+					</Suspense>
 					<Backdrop
 						sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
 						open={open}

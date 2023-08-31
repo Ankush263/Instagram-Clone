@@ -112,3 +112,116 @@ export const SmallAvater = () => {
 		</Box>
 	);
 };
+
+export const MyAllPosts = () => {
+	return (
+		<Box className="w-full mt-10 grid grid-cols-3 gap-1">
+			<Box>
+				<Skeleton
+					sx={{ bgcolor: 'grey.900', marginLeft: '10px' }}
+					variant="rectangular"
+					width={310}
+					height={310}
+				/>
+			</Box>
+			<Box>
+				<Skeleton
+					sx={{ bgcolor: 'grey.900', marginLeft: '10px' }}
+					variant="rectangular"
+					width={310}
+					height={310}
+				/>
+			</Box>
+			<Box>
+				<Skeleton
+					sx={{ bgcolor: 'grey.900', marginLeft: '10px' }}
+					variant="rectangular"
+					width={310}
+					height={310}
+				/>
+			</Box>
+			<Box>
+				<Skeleton
+					sx={{ bgcolor: 'grey.900', marginLeft: '10px' }}
+					variant="rectangular"
+					width={310}
+					height={310}
+				/>
+			</Box>
+			<Box>
+				<Skeleton
+					sx={{ bgcolor: 'grey.900', marginLeft: '10px' }}
+					variant="rectangular"
+					width={310}
+					height={310}
+				/>
+			</Box>
+			<Box>
+				<Skeleton
+					sx={{ bgcolor: 'grey.900', marginLeft: '10px' }}
+					variant="rectangular"
+					width={310}
+					height={310}
+				/>
+			</Box>
+		</Box>
+	);
+};
+
+export const Details = () => {
+	return (
+		<Box className="flex flex-col">
+			<Skeleton
+				variant="text"
+				sx={{ fontSize: '1rem', bgcolor: 'grey.900', width: '270px' }}
+			/>
+			<Skeleton
+				variant="text"
+				sx={{ fontSize: '1rem', bgcolor: 'grey.900', width: '270px' }}
+			/>
+		</Box>
+	);
+};
+
+export const CommentSkeleton = () => {
+	return (
+		<Box className="flex flex-col">
+			<Box className="flex mb-4">
+				<Skeleton
+					variant="circular"
+					width={50}
+					height={50}
+					sx={{ bgcolor: 'grey.900' }}
+				/>
+				<Box className="flex flex-col justify-center items-start ml-3">
+					<Skeleton
+						variant="text"
+						sx={{ fontSize: '1rem', bgcolor: 'grey.900', width: '50px' }}
+					/>
+					<Skeleton
+						variant="text"
+						sx={{ fontSize: '1rem', bgcolor: 'grey.900', width: '100px' }}
+					/>
+				</Box>
+			</Box>
+			<Box className="flex">
+				<Skeleton
+					variant="circular"
+					width={50}
+					height={50}
+					sx={{ bgcolor: 'grey.900' }}
+				/>
+				<Box className="flex flex-col justify-center items-start ml-3">
+					<Skeleton
+						variant="text"
+						sx={{ fontSize: '1rem', bgcolor: 'grey.900', width: '50px' }}
+					/>
+					<Skeleton
+						variant="text"
+						sx={{ fontSize: '1rem', bgcolor: 'grey.900', width: '100px' }}
+					/>
+				</Box>
+			</Box>
+		</Box>
+	);
+};

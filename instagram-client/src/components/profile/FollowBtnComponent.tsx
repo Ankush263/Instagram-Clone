@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Skeleton } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { createFollow, deleteFollow } from '@/api';
 import Backdrop from '@mui/material/Backdrop';
@@ -52,7 +52,20 @@ function FollowBtnComponent(props: any) {
 	};
 	return (
 		<Box className={styles.component}>
-			<span className="text-xl mr-auto">{props.name}</span>
+			{props?.name ? (
+				<span className="text-xl mr-auto">{props.name}</span>
+			) : (
+				<Skeleton
+					variant="text"
+					sx={{
+						fontSize: '2rem',
+						bgcolor: 'grey.900',
+						width: '200px',
+						marginRight: '20px',
+					}}
+				/>
+			)}
+
 			{props.follow ? (
 				<button className={styles.grayBtn} onClick={handleUnfollow}>
 					Unfollow

@@ -33,6 +33,7 @@ function StoryBox(props: any) {
 			formData.append('url', imgFile);
 			await createStory(token, formData);
 			handleClose();
+			props.fetch();
 			close();
 		} catch (error) {
 			console.log(error);

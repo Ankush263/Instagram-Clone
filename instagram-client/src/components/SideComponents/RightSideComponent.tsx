@@ -35,6 +35,11 @@ function RightSideComponent() {
 		}
 	}, []);
 
+	const handleLogout = () => {
+		localStorage.setItem('Token', '');
+		window.location.replace(`/auth/login`);
+	};
+
 	useEffect(() => {
 		let isMounted = true;
 		if (isMounted) {
@@ -43,7 +48,7 @@ function RightSideComponent() {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [fetch]);
 
 	const styles = useMemo(() => {
 		return {
@@ -86,7 +91,9 @@ function RightSideComponent() {
 						<MediumAvater />
 					)}
 					<Box className={styles.rightSubBar}>
-						<p className={styles.blueTxt}>Logout</p>
+						<p className={styles.blueTxt} onClick={handleLogout}>
+							Logout
+						</p>
 					</Box>
 				</Box>
 				<Box className={styles.smallBox}>

@@ -6,8 +6,8 @@ import { fetchToken } from '@/components/token';
 import PostComponent from '@/components/post/PostComponent';
 import Backdrop from '@mui/material/Backdrop';
 import CloseIcon from '@mui/icons-material/Close';
-import Masonry from 'react-masonry-css';
 import CircularProgress from '@mui/material/CircularProgress';
+import ImageGrid from '@/components/main/explorer/ImageGrid';
 
 function ExplorePage() {
 	const [images, setImages] = useState<any>([]);
@@ -21,12 +21,10 @@ function ExplorePage() {
 
 	const fetchImgs = useCallback(async () => {
 		try {
-			console.log('explorer page....');
 			const token = fetchToken();
 			const res = await getIdAndPhotoOfPosts(token);
 			const imgs = res.data.data.data;
 			setImages(imgs);
-			console.log(res.data.data.data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -51,7 +49,6 @@ function ExplorePage() {
 	};
 
 	useEffect(() => {
-		console.log('useEffect...');
 		let isMounted = true;
 		if (isMounted) {
 			fetchImgs();
@@ -80,23 +77,11 @@ function ExplorePage() {
 							</Box>
 						}
 					>
-						<Masonry
-							breakpointCols={breakpoints}
-							className="my-masonry-grid"
-							columnClassName="my-masonry-grid_column"
-						>
-							{images.map((item: any) => (
-								<div key={item._id} className="my-masonry-grid_item">
-									<img
-										src={item.url}
-										alt="#"
-										className="max-w-full max-h-full cursor-pointer"
-										onClick={() => handleClick(item.url, item._id)}
-										loading="lazy"
-									/>
-								</div>
-							))}
-						</Masonry>
+						<ImageGrid
+							breakpoints={breakpoints}
+							images={images}
+							handleClick={handleClick}
+						/>
 					</Suspense>
 				) : (
 					<Box className="w-full h-96 flex justify-center items-center">

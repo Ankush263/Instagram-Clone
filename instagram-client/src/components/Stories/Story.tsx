@@ -61,7 +61,7 @@ function Story() {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [fetch]);
 
 	const styles = useMemo(() => {
 		return {
