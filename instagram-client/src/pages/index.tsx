@@ -15,8 +15,8 @@ export default function Home() {
 		fetch();
 	}, []);
 	return (
-		<>
+		<div>
 			<Homepage />
-		</>
+		</div>
 	);
 }
