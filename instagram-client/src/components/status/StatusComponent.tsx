@@ -4,6 +4,20 @@ import LinearProgress from '@mui/material/LinearProgress';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { deleteStory } from '@/api';
 import { fetchToken } from '../token';
+import { GetStaticProps } from 'next/types';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			handleStatusClose: function () {},
+			setProgress: function () {},
+			id: '',
+			progress: '',
+			url: '',
+		},
+	};
+};
 
 function StatusComponent(props: any) {
 	const handleDelete = async (id: string) => {

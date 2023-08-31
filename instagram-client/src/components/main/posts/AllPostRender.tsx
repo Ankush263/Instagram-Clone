@@ -5,6 +5,19 @@ import CommentOutline from '../../icons/CommentOutline';
 import LikeComponent from '../LikeComponent';
 import { time } from '@/api/calcTime';
 import Link from 'next/link';
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			setOpen: function () {},
+			setDetails: function () {},
+			setLoad: function () {},
+			posts: [],
+		},
+	};
+};
 
 function AllPostRender(props: any) {
 	const handleOpenPost = async (id: string, url: string, avater: string) => {

@@ -2,6 +2,16 @@ import { Box } from '@mui/material';
 import Link from 'next/link';
 import React from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			users: [],
+		},
+	};
+};
 
 function UsersList(props: any) {
 	const styles = {

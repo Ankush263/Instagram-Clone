@@ -1,6 +1,17 @@
 import { Box } from '@mui/material';
 import React from 'react';
 import { MyAllPosts } from '../skeleton/Skeleton';
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			handleClick: function () {},
+			self: {},
+		},
+	};
+};
 
 function MyPosts(props: any) {
 	return (

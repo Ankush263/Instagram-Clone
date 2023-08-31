@@ -4,6 +4,17 @@ import { fetchToken } from '../token';
 import { updateBio, uploadAvater, deleteAvater } from '@/api';
 import SettingsIcon from '@/components/icons/SettingsIcon';
 import CloseIcon from '@mui/icons-material/Close';
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			fetch: function () {},
+			self: {},
+		},
+	};
+};
 
 function SelfDetails(props: any) {
 	const [openEditProfile, setOpeEditProfile] = useState(false);
@@ -107,7 +118,7 @@ function SelfDetails(props: any) {
 					open={openEditProfile}
 				>
 					<Box className="w-[230px] h-[250px] bg-gray rounded-md flex flex-col justify-center items-center">
-						<span className="mr-auto ml-7 mb-5">Bio:</span>
+						<span className="mr-auto ml-7 mb-5">{`Bio:`}</span>
 						<Box
 							className="absolute top-4 right-4 cursor-pointer"
 							onClick={handleCloseEditBio}

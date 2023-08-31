@@ -4,6 +4,19 @@ import { createFollow, deleteFollow } from '@/api';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { fetchToken } from '../token';
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			fetch: function () {},
+			id: '',
+			name: '',
+			follow: false,
+		},
+	};
+};
 
 function FollowBtnComponent(props: any) {
 	const [open, setOpen] = useState(false);

@@ -5,6 +5,17 @@ import { createStory } from '@/api';
 import { fetchToken } from '../token';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			fetch: function () {},
+			handleClose: function () {},
+		},
+	};
+};
 
 function StoryBox(props: any) {
 	const [selectedImage, setSelectedImage] = useState<any>('');

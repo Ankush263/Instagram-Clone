@@ -2,6 +2,16 @@ import { Box } from '@mui/material';
 import React from 'react';
 import Comment from '../comment/Comment';
 import { CommentSkeleton } from '../skeleton/Skeleton';
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			post: {},
+		},
+	};
+};
 
 function Comments(props: any) {
 	return (

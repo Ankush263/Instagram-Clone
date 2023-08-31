@@ -1,6 +1,18 @@
 import { Box } from '@mui/material';
+import { GetStaticProps } from 'next';
 import React from 'react';
 import Masonry from 'react-masonry-css';
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	return {
+		revalidate: 5,
+		props: {
+			breakpoints: {},
+			images: [],
+			handleClick: function () {},
+		},
+	};
+};
 
 function ImageGrid(props: any) {
 	return (
